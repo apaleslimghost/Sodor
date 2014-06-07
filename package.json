@@ -1,0 +1,26 @@
+{
+  "name": "sodor",
+  "version": "0.0.0",
+  "description": "controller dispatching for livewire",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/quarterto/Sodor.git"
+  },
+  "keywords": [
+    "livewire",
+    "controller",
+    "mvc",
+    "rails",
+    "gusto"
+  ],
+  "author": "Matt Brennan <mwrbrennan@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/quarterto/Sodor/issues"
+  },
+  "homepage": "https://github.com/quarterto/Sodor"
+}
