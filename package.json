@@ -22,5 +22,14 @@
   "bugs": {
     "url": "https://github.com/quarterto/Sodor/issues"
   },
-  "homepage": "https://github.com/quarterto/Sodor"
+  "homepage": "https://github.com/quarterto/Sodor",
+  "devDependencies": {
+    "LiveScript": "^1.2.0",
+    "karma-sinon-expect": "^0.1.4",
+    "mocha": "^1.20.1"
+  },
+  "dependencies": {
+    "get-parameter-names": "^0.2.0",
+    "livewire": "^0.4.1"
+  }
 }
