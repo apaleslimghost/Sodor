@@ -33,11 +33,10 @@ export "Sodor Controller":
 				class Foo extends Controller
 				o = Foo.make-handler \bar Foo.post (a)->
 				expect o.path .to.be "/foo/bar/:a"
-		"should pass url parameters to the right function parameters": (done)->
+		"should pass url parameters to the right function parameters": ->
 			class Foo extends Controller
 				bar: (a)->
 					expect a .to.be \hello
-					process.next-tick done
 					return \world
 
 			o = Foo.make-handler \bar Foo::bar
