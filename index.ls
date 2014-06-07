@@ -1,6 +1,6 @@
 require! {
 	\get-parameter-names
-	livewire.respond
+	'livewire/lib/respond'
 }
 
 export class Controller

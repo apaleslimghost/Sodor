@@ -1,4 +1,4 @@
-LSC_OPTS = -k
+LSC_OPTS = -b -k
 
 %.js: %.ls
 	node_modules/.bin/lsc $(LSC_OPTS) -c "$<"

@@ -1,7 +1,9 @@
 require! {
-	'./index.js'.Controller
 	'karma-sinon-expect'.expect
+	rewire
 }
+
+{Controller}:sodor = rewire './index.js'
 
 export "Sodor Controller":
 	"method":
@@ -70,4 +72,48 @@ export "Sodor Controller":
 				o.handler params:
 					a: \hello
 					b: \world
+
+	"routes":
+		before: ->
+			@respond = expect.sinon.stub!
+			sodor.__set__ {@respond}
+
+		before-each: ->
+			expect.sinon.stub Controller, \makeHandler
+
+		after-each: ->
+			Controller.make-handler.restore!
+
+		"should make handlers for each action": ->
+			Controller.make-handler.returns path:'' handler:->
+
+			class Foo extends Controller
+				a: ->
+				b: ->
+				c: ->
+
+			Foo.routes!
+			expect Controller.make-handler .to.be.called-with \a Foo::a
+			expect Controller.make-handler .to.be.called-with \b Foo::b
+			expect Controller.make-handler .to.be.called-with \c Foo::c
+
+		"should make routes for each handler": ->
+			path = '/'
+			handler = ->
+			Controller.make-handler.returns {path, handler}
+
+			class Foo extends Controller
+				a: ->
+
+			Foo.routes!
+			expect @respond .to.be.called-with \get path, handler
+			
+		"should pass through the method": ->
+			Controller.make-handler.returns path: '' handler: ->
+
+			class Foo extends Controller
+				a: @post ->
+
+			Foo.routes!
+			expect @respond .to.be.called-with \post
 
