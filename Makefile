@@ -5,7 +5,7 @@ LSC_OPTS = -k
 
 all: index.js
 
-test: all
+test: all test.ls
 	node_modules/.bin/mocha -r LiveScript -u exports test.ls
 
 .PHONY: test

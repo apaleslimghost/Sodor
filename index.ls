@@ -26,7 +26,7 @@ export class Controller
 		params-path = params.map (':' ++) .join '/'
 
 		path: "/#{@display-name.to-lower-case!}/#action/#params-path"
-		handler: (req)->
+		handler: (req)~>
 			values = [req.params[k] for k in params]
 			controller = new this req
 			controller[action] ...values
