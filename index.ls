@@ -8,6 +8,8 @@ export class Controller
 
 	@method = (method, action)-->
 		action import {method}
+	
+	@root = (import {+root})
 
 	for m in <[get post put delete patch options head trace connect]>
 		@[m] = @method m

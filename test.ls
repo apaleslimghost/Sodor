@@ -19,6 +19,12 @@ export "Sodor Controller":
 				expect o .to.have.property \method m
 		] for m in <[get post put delete patch options head trace connect]>}
 
+	"root":
+		"should set root to be true": ->
+			o = {}
+			Controller.root o
+			expect o .to.have.property \root true
+
 	"make-handler":
 		"should return a path based on classname and action name": ->
 			class Foo extends Controller
