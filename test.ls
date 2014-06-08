@@ -44,6 +44,12 @@ export "Sodor Controller":
 				o = Foo.make-paths \bar <[a b c d]>
 				expect o .to.contain "/foo/bar/:a/:b/:c/:d"
 
+		"should create root paths for a root-annotated action": ->
+			class Foo extends Controller
+				bar: @root ->
+
+			expect Foo.make-paths \bar [] .to.contain '/foo'
+
 	"handle":
 		"should instantiate the controller": (done)->
 			c = expect.sinon.spy!
