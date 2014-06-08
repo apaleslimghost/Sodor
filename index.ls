@@ -1,6 +1,7 @@
 require! {
-	\get-parameter-names
+	'get-parameter-names'
 	'livewire/lib/respond'
+	path.normalize
 }
 
 flat-map = (xs, f)-->
@@ -32,9 +33,14 @@ export class Controller
 			handler
 
 	@make-paths = (action, params)->
-		params-path = params.map (':' ++) .join '/'
-		
-		["/#{@display-name.to-lower-case!}/#action/#params-path"]
+		params-parts = params.map (':' +)
+		make-path = normalize . ('/' +) . (.join '/')
+		classname = @display-name.to-lower-case!
+
+		[
+			[classname, action]
+			[classname] if @::[action].root
+		].filter (?) .map make-path . (++ params-parts)
 
 	@handle = (action, params)-> (req)~>
 		values = [req.params[k] for k in params]

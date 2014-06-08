@@ -28,17 +28,20 @@ export "Sodor Controller":
 	"make-paths":
 		"should return a path based on classname and action name": ->
 			class Foo extends Controller
+				bar: ->
 			o = Foo.make-paths \bar []
-			expect o .to.contain "/foo/bar/"
+			expect o .to.contain "/foo/bar"
 
 		"should add path parts based on function params":
 			"with a single parameter": ->
 				class Foo extends Controller
+					bar: ->
 				o = Foo.make-paths \bar [\a]
 				expect o .to.contain "/foo/bar/:a"
 
 			"with multiple parameters": ->
 				class Foo extends Controller
+					bar: ->
 				o = Foo.make-paths \bar <[a b c d]>
 				expect o .to.contain "/foo/bar/:a/:b/:c/:d"
 
