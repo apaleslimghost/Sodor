@@ -1,4 +1,4 @@
-# Sodor
+# Sodor [![Build Status](https://travis-ci.org/quarterto/Sodor.svg?branch=master)](https://travis-ci.org/quarterto/Sodor)
 
 Controller dispatching for Livewire. Which lets you write routes like
 
