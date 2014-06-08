@@ -3,6 +3,11 @@ require! {
 	'livewire/lib/respond'
 }
 
+flat-map = (xs, f)-->
+	xs.reduce ((a, x)-> a ++ f x), []
+obj = -> [[k, v] for k, v of it]
+guard = (cond)-> if cond then [null] else []
+
 export class Controller
 	(@request)->
 
@@ -15,20 +20,24 @@ export class Controller
 		@[m] = @method m
 
 	@routes = ->
-		for action, fn of @:: when action not of Controller::
-			{path, handler} = @make-handler action, fn
-			
-			respond do
-				fn.method ? \get
-				path
-				handler
+		[action, fn] <~ flat-map obj @::
+		<~ flat-map guard action not of Controller::
 
-	@make-handler = (action, fn)->
 		params = get-parameter-names fn
-		params-path = params.map (':' ++) .join '/'
+		handler = @handle action, fn, params
 
-		path: "/#{@display-name.to-lower-case!}/#action/#params-path"
-		handler: (req)~>
-			values = [req.params[k] for k in params]
-			controller = new this req
-			controller[action] ...values
+		path <- flat-map @make-paths action, params
+		respond do
+			fn.method ? \get
+			path
+			handler
+
+	@make-paths = (action, params)->
+		params-path = params.map (':' ++) .join '/'
+		
+		["/#{@display-name.to-lower-case!}/#action/#params-path"]
+
+	@handle = (action, fn, params)-> (req)~>
+		values = [req.params[k] for k in params]
+		controller = new this req
+		controller[action] ...values
