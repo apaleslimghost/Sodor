@@ -5,7 +5,6 @@ require! {
 
 flat-map = (xs, f)-->
 	xs.reduce ((a, x)-> a ++ f x), []
-obj = -> [[k, v] for k, v of it]
 guard = (cond)-> if cond then [null] else []
 
 export class Controller
@@ -20,15 +19,15 @@ export class Controller
 		@[m] = @method m
 
 	@routes = ->
-		[action, fn] <~ flat-map obj @::
+		action <~ flat-map Object.keys @::
 		<~ flat-map guard action not of Controller::
 
-		params = get-parameter-names fn
-		handler = @handle action, fn, params
+		params = get-parameter-names @::[action]
+		handler = @handle action, params
 
-		path <- flat-map @make-paths action, params
+		path <~ flat-map @make-paths action, params
 		respond do
-			fn.method ? \get
+			@::[action].method ? \get
 			path
 			handler
 
@@ -37,7 +36,7 @@ export class Controller
 		
 		["/#{@display-name.to-lower-case!}/#action/#params-path"]
 
-	@handle = (action, fn, params)-> (req)~>
+	@handle = (action, params)-> (req)~>
 		values = [req.params[k] for k in params]
 		controller = new this req
 		controller[action] ...values

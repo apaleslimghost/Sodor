@@ -24,8 +24,6 @@ export "Sodor Controller":
 			o = {}
 			Controller.root o
 			expect o .to.have.property \root true
-	
-	
 
 	"make-paths":
 		"should return a path based on classname and action name": ->
@@ -76,7 +74,7 @@ export "Sodor Controller":
 					expect b .to.be \world
 					done!
 
-			o = Foo.handle \bar Foo::bar, [\a \b]
+			o = Foo.handle \bar [\a \b]
 			o params:
 				a: \hello
 				b: \world
@@ -99,9 +97,9 @@ export "Sodor Controller":
 				c: ->
 
 			Foo.routes!
-			expect Controller.handle .to.be.called-with \a Foo::a
-			expect Controller.handle .to.be.called-with \b Foo::b
-			expect Controller.handle .to.be.called-with \c Foo::c
+			expect Controller.handle .to.be.called-with \a
+			expect Controller.handle .to.be.called-with \b
+			expect Controller.handle .to.be.called-with \c
 
 		"should make routes for each handler": ->
 			Controller.handle.returns handler = ->
