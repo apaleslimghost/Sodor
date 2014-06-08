@@ -1,32 +1,48 @@
 require! {
-	\get-parameter-names
+	'get-parameter-names'
 	'livewire/lib/respond'
+	path.normalize
 }
+
+flat-map = (xs, f)-->
+	xs.reduce ((a, x)-> a ++ f x), []
+guard = (cond)-> if cond then [null] else []
 
 export class Controller
 	(@request)->
 
 	@method = (method, action)-->
 		action import {method}
+	
+	@root = (import {+root})
 
 	for m in <[get post put delete patch options head trace connect]>
 		@[m] = @method m
 
 	@routes = ->
-		for action, fn of @:: when action not of Controller::
-			{path, handler} = @make-handler action, fn
-			
-			respond do
-				fn.method ? \get
-				path
-				handler
+		action <~ flat-map Object.keys @::
+		<~ flat-map guard action not of Controller::
 
-	@make-handler = (action, fn)->
-		params = get-parameter-names fn
-		params-path = params.map (':' ++) .join '/'
+		params = get-parameter-names @::[action]
+		handler = @handle action, params
 
-		path: "/#{@display-name.to-lower-case!}/#action/#params-path"
-		handler: (req)~>
-			values = [req.params[k] for k in params]
-			controller = new this req
-			controller[action] ...values
+		path <~ flat-map @make-paths action, params
+		respond do
+			@::[action].method ? \get
+			path
+			handler
+
+	@make-paths = (action, params)->
+		params-parts = params.map (':' +)
+		make-path = normalize . ('/' +) . (.join '/')
+		classname = @display-name.to-lower-case!
+
+		[
+			[classname, action]
+			[classname] if @::[action].root
+		].filter (?) .map make-path . (++ params-parts)
+
+	@handle = (action, params)-> (req)~>
+		values = [req.params[k] for k in params]
+		controller = new this req
+		controller[action] ...values
