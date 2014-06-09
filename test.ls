@@ -24,6 +24,12 @@ export "Sodor Controller":
 			o = {}
 			Controller.root o
 			expect o .to.have.property \root true
+			
+	"alias":
+		"should add a alias property": ->
+			o = {}
+			Controller.alias \a o
+			expect o .to.have.property \alias \a
 
 	"make-paths":
 		"should return a path based on classname and action name": ->

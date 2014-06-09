@@ -11,9 +11,12 @@ guard = (cond)-> if cond then [null] else []
 export class Controller
 	(@request)->
 
-	@method = (method, action)-->
-		action import {method}
-	
+	property-decorator = (prop)~>
+		@[prop] = (val, action)--> action import (prop):val
+
+	property-decorator \method
+	property-decorator \alias
+
 	@root = (import {+root})
 
 	for m in <[get post put delete patch options head trace connect]>
