@@ -43,6 +43,7 @@ export class Controller
 		[
 			[classname, action]
 			[classname] if @::[action].root
+			[that] if @::[action].alias?
 		].filter (?) .map make-path . (++ params-parts)
 
 	@handle = (action, params)-> (req)~>
