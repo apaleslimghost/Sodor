@@ -57,6 +57,12 @@ export "Sodor Controller":
 
 			expect Foo.make-paths \bar [] .to.contain '/foo'
 
+		"should add alias paths": ->
+			class Foo extends Controller
+				bar: @alias '/another/path' ->
+
+			expect Foo.make-paths \bar [] .to.contain '/another/path'
+
 	"handle":
 		"should instantiate the controller": (done)->
 			c = expect.sinon.spy!
