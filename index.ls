@@ -60,7 +60,7 @@ export class Controller
 			path
 			handler
 
-	#### `make-paths :: String → [String] → Path
+	#### `make-paths :: String → [String] → Path`
 	# Turn an action name and some parameter names into a path, potentially in 3 different ways:
 	#   1. /class-name/action-name/params
 	#   2. /class-name/params if the action has `root` set
