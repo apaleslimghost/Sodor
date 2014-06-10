@@ -8,12 +8,11 @@ require! {
 }
 #### Some functional helpers
 ##### `flat-map :: Array a → (a → (Array b | b)) → Array b`
-# Yay for Javascript's type system. `.concat` is `Array a → (Array a | a) → Array a
+# Yay for Javascript's type system. `.concat` is `Array a → (Array a | a) → Array a`
 flat-map = (xs, f)-->
 	xs.reduce ((a, x)-> a ++ f x), []
 ##### `guard :: Boolean → Array ()`
 guard = (cond)-> if cond then [null] else []
-
 # `Controller`
 # ---
 #
