@@ -18,6 +18,8 @@ guard = (cond)-> if cond then [null] else []
 # ---
 #
 # The main class we export. Consumers should extend this.
+#
+# Since we extend `Base` (i.e. [Estira](/quarterto/Estira)), Javascript consumers can write `Controller.extend('Foo', {bar: function() {...}})`. 
 export class Controller extends Base
 	##### `constructor`
 	# We save the request to the instance (as we see later, it's one instance ⇔ one request).
