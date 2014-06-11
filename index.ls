@@ -5,6 +5,7 @@ require! {
 	'get-parameter-names'
 	'livewire/lib/respond'
 	path.normalize
+	Base: estira
 }
 #### Some functional helpers
 ##### `flat-map :: Array a → (a → (Array b | b)) → Array b`
@@ -17,7 +18,7 @@ guard = (cond)-> if cond then [null] else []
 # ---
 #
 # The main class we export. Consumers should extend this.
-export class Controller
+export class Controller extends Base
 	##### `constructor`
 	# We save the request to the instance (as we see later, it's one instance ⇔ one request).
 	(@request)->
