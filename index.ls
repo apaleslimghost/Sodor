@@ -53,6 +53,10 @@ export class Controller extends Base
 			@::[action].method ? \get
 			path
 			handler
+	##### `base-path :: → Path`
+	# Gets the base path for this controller. If Controller.base is specified, use that, otherwise use the class name in lower case.
+	@base-path = ->
+		@base ? @display-name.to-lower-case!
 	##### `make-paths :: String → [String] → Path`
 	# Turn an action name and some parameter names into a path, potentially in 3 different ways:
 	#   1. /class-name/action-name/params
@@ -61,7 +65,7 @@ export class Controller extends Base
 	@make-paths = (action, params)->
 		params-parts = params.map (':' +)
 		make-path = normalize . ('/' +) . (.join '/')
-		classname = @display-name.to-lower-case!
+		classname = @base-path!
 
 		[
 			[classname, action]

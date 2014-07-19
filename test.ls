@@ -38,6 +38,14 @@ export "Sodor Controller":
 			o = Foo.make-paths \bar []
 			expect o .to.contain "/foo/bar"
 
+		"should use base path instead of class name": ->
+			class Foo extends Controller
+				@base = "/baz/quux"
+				bar: ->
+			o = Foo.make-paths \bar []
+			expect o .to.contain "/baz/quux/bar"
+			expect o .not.to.contain "/foo/bar"
+
 		"should add path parts based on function params":
 			"with a single parameter": ->
 				class Foo extends Controller
