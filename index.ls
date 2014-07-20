@@ -14,6 +14,29 @@ flat-map = (xs, f)-->
 	xs.reduce ((a, x)-> a ++ f x), []
 ##### `guard :: Boolean → Array ()`
 guard = (cond)-> if cond then [null] else []
+##### `array-if :: Array a → Boolean → Array a`
+array-if = (xs, cond)-->
+	flat-map (guard cond), -> xs
+##### `id :: ∀ a. a → a`
+id = (a)-> a
+##### `join :: Array Array a → Array a`
+join = (`flat-map` id)
+# `Path`
+# ---
+#
+# Utility class for constructing and parsing paths, so as we don't accidentally munge arrays together.
+
+export class Path
+##### `parse :: String → Path`
+	@parse = (path)->
+		Path ...(path.split '/')
+##### `constructor`
+	(...@parts)~>
+##### `#to-string :: → String`
+	to-string: -> '/' + @parts.join '/'
+##### `#concat :: (Path | Array String) → Path
+	concat: (o)->
+		Path ...(this.parts ++ (o.parts ? o))
 # `Controller`
 # ---
 #
@@ -24,14 +47,12 @@ export class Controller extends Base
 	##### `constructor`
 	# We save the request to the instance (as we see later, it's one instance ⇔ one request).
 	(@request)->
-	##### `private property-decorator`
-	# Shorthand for creating decorators which save properties of the same name
-	property-decorator = (prop)~>
-		@[prop] = (val, action)--> action import (prop):val
 	##### `method :: HTTPMethod → Action → Action`
-	property-decorator \method
+	@method = (val, action)--> action import method:val
 	##### `alias :: Path → Action → Action`
-	property-decorator \alias
+	@alias = (...aka, action)->
+		action.alias = action.[]alias.concat aka
+		action
 	##### `root :: Action → Action`
 	# Sets `root` to true for the action
 	@root = (import {+root})
@@ -64,14 +85,14 @@ export class Controller extends Base
 	#   3. /alias/params if the action has an `alias`
 	@make-paths = (action, params)->
 		params-parts = params.map (':' +)
-		make-path = normalize . ('/' +) . (.join '/')
-		classname = @base-path!
+		make-path = normalize . (.to-string!)
+		base = @base-path!
 
-		[
-			[classname, action]
-			[classname] if @::[action].root
-			[that] if @::[action].alias?
-		].filter (?) .map make-path . (++ params-parts)
+		join [
+			[Path base, action]
+			[Path base] `array-if` @::[action].root
+			(@::[action].alias?map Path.parse) `array-if` @::[action].alias?
+		] .map make-path . (++ params-parts)
 	##### `handle :: String → [String] → (Request → Promise Response`
 	# Wrap an action in a Livewire-compatible route handler that assigns parameters and instantiates the controller before calling the correct action.
 	@handle = (action, params)-> (req)~>

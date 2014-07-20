@@ -29,7 +29,13 @@ export "Sodor Controller":
 		"should add a alias property": ->
 			o = {}
 			Controller.alias \a o
-			expect o .to.have.property \alias \a
+			expect o.alias .to.contain \a
+		"should add multiple aliae": ->
+			o = {}
+			Controller.alias \a o
+			Controller.alias \b o
+			expect o.alias .to.contain \a
+			expect o.alias .to.contain \b
 
 	"make-paths":
 		"should return a path based on classname and action name": ->
@@ -70,6 +76,13 @@ export "Sodor Controller":
 				bar: @alias '/another/path' ->
 
 			expect Foo.make-paths \bar [] .to.contain '/another/path'
+
+		"should add multiple alias paths": ->
+			class Foo extends Controller
+				bar: @alias '/another/path' '/another/other/path' ->
+
+			expect Foo.make-paths \bar [] .to.contain '/another/path'
+			expect Foo.make-paths \bar [] .to.contain '/another/other/path'
 
 	"handle":
 		"should instantiate the controller": (done)->
