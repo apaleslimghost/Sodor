@@ -95,12 +95,13 @@ export class Controller extends Base
 	@make-paths = (action, params)->
 		params-parts = params.map (':' +)
 		base = @base-path!
+		method = @::[action]
 
 		join [
 			[Path base, action]
-			[Path base] `array-if` (@::[action][root] or @[root])
-			(@::[action][alias]?map Path.parse) `array-if` @::[action][alias]?
-		] `array-if` not @::[action][pirate]
+			[Path base] `array-if` (method[root] or @[root])
+			(method[alias]?map Path.parse) `array-if` method[alias]?
+		] `array-if` not method[pirate]
 		.map (.to-string!) . (++ params-parts)
 	##### `handle :: String → [String] → (Request → Promise Response`
 	# Wrap an action in a Livewire-compatible route handler that assigns parameters and instantiates the controller before calling the correct action.
