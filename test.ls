@@ -3,117 +3,239 @@ require! {
 	rewire
 }
 
-{Controller}:sodor = rewire './index.js'
+{
+	Controller,
+	root,
+	alias,
+	method,
+	pirate,
+	special
+}:sodor = rewire './index.js'
 
 export "Sodor Controller":
 	"method":
 		"should add a method property": ->
 			o = {}
 			Controller.method \a o
-			expect o .to.have.property \method \a
+			expect o .to.have.property method, \a
 
 		"should have shorthands for http methods": {[
 			m, ->
 				o = {}
 				Controller[m] o
-				expect o .to.have.property \method m
+				expect o .to.have.property method, m
 		] for m in <[get post put delete patch options head trace connect]>}
 
-	"make-handler":
+	"root":
+		"should set root to be true": ->
+			o = {}
+			Controller.root o
+			expect o .to.have.property root, true
+		"can apply to whole controller": ->
+			class Test extends Controller
+			Test.root!
+			expect Test .to.have.property root, true
+
+	"private":
+		"should set private to be true": ->
+			o = {}
+			Controller.private o
+			expect o .to.have.property pirate, true
+		"can apply to whole controller": ->
+			class Test extends Controller
+			Test.private!
+			expect Test .to.have.property pirate, true
+
+	"special":
+		"should set special to be true": ->
+			o = {}
+			Controller.special o
+			expect o .to.have.property special, true
+		"can apply to whole controller": ->
+			class Test extends Controller
+			Test.special!
+			expect Test .to.have.property special, true
+
+	"alias":
+		"should add a alias property": ->
+			o = {}
+			Controller.alias \a o
+			expect o[alias] .to.contain \a
+		"should add multiple aliae": ->
+			o = {}
+			Controller.alias \a o
+			Controller.alias \b o
+			expect o[alias] .to.contain \a
+			expect o[alias] .to.contain \b
+
+	"make-paths":
 		"should return a path based on classname and action name": ->
 			class Foo extends Controller
-			o = Foo.make-handler \bar ->
-			expect o.path .to.be "/foo/bar/"
+				bar: ->
+			o = Foo.make-paths \bar []
+			expect o .to.contain "/foo/bar"
+
+		"should use base path instead of class name": ->
+			class Foo extends Controller
+				@base = "/baz/quux"
+				bar: ->
+			o = Foo.make-paths \bar []
+			expect o .to.contain "/baz/quux/bar"
+			expect o .not.to.contain "/foo/bar"
 
 		"should add path parts based on function params":
 			"with a single parameter": ->
 				class Foo extends Controller
-				o = Foo.make-handler \bar (a)->
-				expect o.path .to.be "/foo/bar/:a"
+					bar: ->
+				o = Foo.make-paths \bar [\a]
+				expect o .to.contain "/foo/bar/:a"
 
 			"with multiple parameters": ->
 				class Foo extends Controller
-				o = Foo.make-handler \bar (a,b,c,d)->
-				expect o.path .to.be "/foo/bar/:a/:b/:c/:d"
-
-			"even with a method decorator": ->
-				class Foo extends Controller
-				o = Foo.make-handler \bar Foo.post (a)->
-				expect o.path .to.be "/foo/bar/:a"
-
-		"should wrap actions in handlers":
-			"that instantiate the controller": (done)->
-				c = expect.sinon.spy!
-				class Foo extends Controller
-					constructor$$: c
 					bar: ->
-						expect this .to.be.a Foo
-						expect c .to.be.called!
-						done!
+				o = Foo.make-paths \bar <[a b c d]>
+				expect o .to.contain "/foo/bar/:a/:b/:c/:d"
 
-				o = Foo.make-handler \bar Foo::bar
-				o.handler!
+		"should create root paths for a root-annotated action": ->
+			class Foo extends Controller
+				bar: @root ->
 
-			"that pass through return values": ->
-				class Foo extends Controller
-					bar: -> \world
+			expect Foo.make-paths \bar [] .to.contain '/foo'
 
-				o = Foo.make-handler \bar Foo::bar
-				expect o.handler! .to.be \world
+		"should create root paths for a root-annotated controller": ->
+			class Foo extends Controller
+				@root!
+				bar: ->
 
-			"that send url parameters to the right places": (done)->
-				class Foo extends Controller
-					bar: (a,b)->
-						expect a .to.be \hello
-						expect b .to.be \world
-						done!
+			expect Foo.make-paths \bar [] .to.contain '/foo'
 
-				o = Foo.make-handler \bar Foo::bar
-				o.handler params:
-					a: \hello
-					b: \world
+		"should add alias paths": ->
+			class Foo extends Controller
+				bar: @alias '/another/path' ->
+
+			expect Foo.make-paths \bar [] .to.contain '/another/path'
+
+		"should add multiple alias paths": ->
+			class Foo extends Controller
+				bar: @alias '/another/path' '/another/other/path' ->
+
+			expect Foo.make-paths \bar [] .to.contain '/another/path'
+			expect Foo.make-paths \bar [] .to.contain '/another/other/path'
+
+		"should skip private actions entirely": ->
+			class Foo extends Controller
+				bar: @private ->
+
+			expect Foo.make-paths \bar [] .to.be.empty!
+
+		"should skip default route of special actions": ->
+			class Foo extends Controller
+				bar: @special ->
+
+			expect Foo.make-paths \bar [] .to.be.empty!
+			
+		"should allow alias of special actions": ->
+			class Foo extends Controller
+				bar: @special @alias '/quux' ->
+
+			expect Foo.make-paths \bar [] .to.contain '/quux'
+			expect Foo.make-paths \bar [] .not.to.contain '/foo/bar'
+			
+		"should allow root route of special actions": ->
+			class Foo extends Controller
+				bar: @special @root ->
+
+			expect Foo.make-paths \bar [] .to.contain '/foo'
+			expect Foo.make-paths \bar [] .not.to.contain '/foo/bar'
+
+	"handle":
+		"should instantiate the controller": (done)->
+			c = expect.sinon.spy!
+			class Foo extends Controller
+				constructor$$: c
+				bar: ->
+					expect this .to.be.a Foo
+					expect c .to.be.called!
+					done!
+
+			(Foo.handle \bar Foo::bar, [])!
+
+		"should pass through return values": ->
+			class Foo extends Controller
+				bar: -> \world
+
+			o = Foo.handle \bar Foo::bar, []
+			expect o! .to.be \world
+
+		"should send url parameters to the right places": (done)->
+			class Foo extends Controller
+				bar: (a,b)->
+					expect a .to.be \hello
+					expect b .to.be \world
+					done!
+
+			o = Foo.handle \bar [\a \b]
+			o params:
+				a: \hello
+				b: \world
 
 	"routes":
 		before: ->
 			@respond = expect.sinon.stub!
 			sodor.__set__ {@respond}
+			expect.sinon.stub Controller, \handle
+			expect.sinon.stub Controller, \makePaths
 
 		before-each: ->
-			expect.sinon.stub Controller, \makeHandler
-
-		after-each: ->
-			Controller.make-handler.restore!
+			Controller.make-paths.returns ['/']
+			Controller.handle.returns ->
 
 		"should make handlers for each action": ->
-			Controller.make-handler.returns path:'' handler:->
-
 			class Foo extends Controller
 				a: ->
 				b: ->
 				c: ->
 
 			Foo.routes!
-			expect Controller.make-handler .to.be.called-with \a Foo::a
-			expect Controller.make-handler .to.be.called-with \b Foo::b
-			expect Controller.make-handler .to.be.called-with \c Foo::c
+			expect Controller.handle .to.be.called-with \a
+			expect Controller.handle .to.be.called-with \b
+			expect Controller.handle .to.be.called-with \c
 
 		"should make routes for each handler": ->
-			path = '/'
-			handler = ->
-			Controller.make-handler.returns {path, handler}
-
+			Controller.handle.returns handler = ->
 			class Foo extends Controller
 				a: ->
 
 			Foo.routes!
-			expect @respond .to.be.called-with \get path, handler
+			expect @respond .to.be.called-with \get '/' handler
 			
 		"should pass through the method": ->
-			Controller.make-handler.returns path: '' handler: ->
-
 			class Foo extends Controller
 				a: @post ->
 
 			Foo.routes!
 			expect @respond .to.be.called-with \post
+
+		"should create multiple routes for multiple paths": ->
+			Controller.make-paths.returns [\a \b]
+			class Foo extends Controller
+				a: ->
+
+			Foo.routes!
+			expect @respond .to.be.called-with \get 'a'
+			expect @respond .to.be.called-with \get 'b'
+
+		"should return the list of routes": ->
+			@respond.returns \a
+			class Foo extends Controller
+				a: ->
+
+			expect Foo.routes! .to.contain \a
+
+	"should be extendable via Estira": ->
+		Foo = Controller.extend \Foo {
+			bar: ->
+		}
+
+		expect Foo.make-paths \bar [] .to.contain '/foo/bar'
 
