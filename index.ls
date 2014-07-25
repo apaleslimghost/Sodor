@@ -27,6 +27,7 @@ join = (`flat-map` id)
 export root   = Symbol \root
 export alias  = Symbol \alias
 export method = Symbol \method
+export pirate = Symbol \private
 # `Path`
 # ---
 #
@@ -61,6 +62,9 @@ export class Controller extends Base
 	##### `root :: Action → Action`
 	# Sets `root` to true for the action
 	@root = (obj ? this) -> obj import {+(root)}
+	##### `root :: Action → Action`
+	# Sets `root` to true for the action
+	@private = (obj ? this) -> obj import {+(pirate)}
 	##### Method decorators
 	# These are `method` partially applied with the usual HTTP methods
 	for m in <[get post put delete patch options head trace connect]>
@@ -96,7 +100,8 @@ export class Controller extends Base
 			[Path base, action]
 			[Path base] `array-if` (@::[action][root] or @[root])
 			(@::[action][alias]?map Path.parse) `array-if` @::[action][alias]?
-		] .map (.to-string!) . (++ params-parts)
+		] `array-if` not @::[action][pirate]
+		.map (.to-string!) . (++ params-parts)
 	##### `handle :: String → [String] → (Request → Promise Response`
 	# Wrap an action in a Livewire-compatible route handler that assigns parameters and instantiates the controller before calling the correct action.
 	@handle = (action, params)-> (req)~>

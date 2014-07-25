@@ -3,7 +3,13 @@ require! {
 	rewire
 }
 
-{Controller, root, alias, method}:sodor = rewire './index.js'
+{
+	Controller,
+	root,
+	alias,
+	method,
+	pirate
+}:sodor = rewire './index.js'
 
 export "Sodor Controller":
 	"method":
@@ -28,7 +34,17 @@ export "Sodor Controller":
 			class Test extends Controller
 			Test.root!
 			expect Test .to.have.property root, true
-			
+
+	"private":
+		"should set private to be true": ->
+			o = {}
+			Controller.private o
+			expect o .to.have.property pirate, true
+		"can apply to whole controller": ->
+			class Test extends Controller
+			Test.private!
+			expect Test .to.have.property pirate, true
+
 	"alias":
 		"should add a alias property": ->
 			o = {}
@@ -94,6 +110,12 @@ export "Sodor Controller":
 
 			expect Foo.make-paths \bar [] .to.contain '/another/path'
 			expect Foo.make-paths \bar [] .to.contain '/another/other/path'
+
+		"should skip private actions entirely": ->
+			class Foo extends Controller
+				bar: @private ->
+
+			expect Foo.make-paths \bar [] .to.be.empty!
 
 	"handle":
 		"should instantiate the controller": (done)->
