@@ -93,9 +93,10 @@ export class Controller extends Base
 		@base ? @display-name.to-lower-case!
 	##### `make-paths :: String → [String] → Path`
 	# Turn an action name and some parameter names into a path, potentially in 3 different ways:
-	#   1. /class-name/action-name/params
+	#   1. /class-name/action-name/params unless the action is `special`
 	#   2. /class-name/params if the action has `root` set
 	#   3. /alias/params if the action has an `alias`
+	# If the action is `private`, no routes are generated. It can, however, be called internally from other routes.
 	@make-paths = (action, params)->
 		params-parts = params.map (':' +)
 		base = @base-path!
