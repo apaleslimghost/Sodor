@@ -37,7 +37,7 @@ export class Path
 ##### `constructor`
 	(...@parts)~>
 ##### `#to-string :: → String`
-	to-string: -> '/' + @parts.join '/'
+	to-string: -> normalize '/' + @parts.join '/'
 ##### `#concat :: (Path | Array String) → Path
 	concat: (o)->
 		Path ...(this.parts ++ (o.parts ? o))
@@ -89,14 +89,13 @@ export class Controller extends Base
 	#   3. /alias/params if the action has an `alias`
 	@make-paths = (action, params)->
 		params-parts = params.map (':' +)
-		make-path = normalize . (.to-string!)
 		base = @base-path!
 
 		join [
 			[Path base, action]
 			[Path base] `array-if` (@::[action][root] or @[root])
 			(@::[action][alias]?map Path.parse) `array-if` @::[action][alias]?
-		] .map make-path . (++ params-parts)
+		] .map (.to-string!) . (++ params-parts)
 	##### `handle :: String → [String] → (Request → Promise Response`
 	# Wrap an action in a Livewire-compatible route handler that assigns parameters and instantiates the controller before calling the correct action.
 	@handle = (action, params)-> (req)~>
