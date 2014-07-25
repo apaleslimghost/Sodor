@@ -24,8 +24,9 @@ id = (a)-> a
 join = (`flat-map` id)
 #### Symbols
 # Create some symbols so we don't overwrite things or get things overwritten
-export root  = Symbol \root
-export alias = Symbol \alias
+export root   = Symbol \root
+export alias  = Symbol \alias
+export method = Symbol \method
 # `Path`
 # ---
 #
@@ -52,7 +53,7 @@ export class Controller extends Base
 	# We save the request to the instance (as we see later, it's one instance ⇔ one request).
 	(@request)->
 	##### `method :: HTTPMethod → Action → Action`
-	@method = (val, action)--> action import method:val
+	@method = (val, action)--> action import (method):val
 	##### `alias :: Path → Action → Action`
 	@alias = (...aka, action)->
 		action[alias] = action.[][alias].concat aka
@@ -75,7 +76,7 @@ export class Controller extends Base
 
 		path <~ flat-map @make-paths action, params
 		respond do
-			@::[action].method ? \get
+			@::[action][method] ? \get
 			path
 			handler
 	##### `base-path :: → Path`
