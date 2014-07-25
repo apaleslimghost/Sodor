@@ -24,7 +24,8 @@ id = (a)-> a
 join = (`flat-map` id)
 #### Symbols
 # Create some symbols so we don't overwrite things or get things overwritten
-export root = Symbol \root
+export root  = Symbol \root
+export alias = Symbol \alias
 # `Path`
 # ---
 #
@@ -54,7 +55,7 @@ export class Controller extends Base
 	@method = (val, action)--> action import method:val
 	##### `alias :: Path → Action → Action`
 	@alias = (...aka, action)->
-		action.alias = action.[]alias.concat aka
+		action[alias] = action.[][alias].concat aka
 		action
 	##### `root :: Action → Action`
 	# Sets `root` to true for the action
@@ -94,7 +95,7 @@ export class Controller extends Base
 		join [
 			[Path base, action]
 			[Path base] `array-if` (@::[action][root] or @[root])
-			(@::[action].alias?map Path.parse) `array-if` @::[action].alias?
+			(@::[action][alias]?map Path.parse) `array-if` @::[action][alias]?
 		] .map make-path . (++ params-parts)
 	##### `handle :: String → [String] → (Request → Promise Response`
 	# Wrap an action in a Livewire-compatible route handler that assigns parameters and instantiates the controller before calling the correct action.

@@ -3,7 +3,7 @@ require! {
 	rewire
 }
 
-{Controller, root}:sodor = rewire './index.js'
+{Controller, root, alias}:sodor = rewire './index.js'
 
 export "Sodor Controller":
 	"method":
@@ -33,13 +33,13 @@ export "Sodor Controller":
 		"should add a alias property": ->
 			o = {}
 			Controller.alias \a o
-			expect o.alias .to.contain \a
+			expect o[alias] .to.contain \a
 		"should add multiple aliae": ->
 			o = {}
 			Controller.alias \a o
 			Controller.alias \b o
-			expect o.alias .to.contain \a
-			expect o.alias .to.contain \b
+			expect o[alias] .to.contain \a
+			expect o[alias] .to.contain \b
 
 	"make-paths":
 		"should return a path based on classname and action name": ->
