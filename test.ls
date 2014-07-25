@@ -8,7 +8,8 @@ require! {
 	root,
 	alias,
 	method,
-	pirate
+	pirate,
+	special
 }:sodor = rewire './index.js'
 
 export "Sodor Controller":
@@ -44,6 +45,16 @@ export "Sodor Controller":
 			class Test extends Controller
 			Test.private!
 			expect Test .to.have.property pirate, true
+
+	"special":
+		"should set special to be true": ->
+			o = {}
+			Controller.special o
+			expect o .to.have.property special, true
+		"can apply to whole controller": ->
+			class Test extends Controller
+			Test.special!
+			expect Test .to.have.property special, true
 
 	"alias":
 		"should add a alias property": ->
@@ -116,6 +127,26 @@ export "Sodor Controller":
 				bar: @private ->
 
 			expect Foo.make-paths \bar [] .to.be.empty!
+
+		"should skip default route of special actions": ->
+			class Foo extends Controller
+				bar: @special ->
+
+			expect Foo.make-paths \bar [] .to.be.empty!
+			
+		"should allow alias of special actions": ->
+			class Foo extends Controller
+				bar: @special @alias '/quux' ->
+
+			expect Foo.make-paths \bar [] .to.contain '/quux'
+			expect Foo.make-paths \bar [] .not.to.contain '/foo/bar'
+			
+		"should allow root route of special actions": ->
+			class Foo extends Controller
+				bar: @special @root ->
+
+			expect Foo.make-paths \bar [] .to.contain '/foo'
+			expect Foo.make-paths \bar [] .not.to.contain '/foo/bar'
 
 	"handle":
 		"should instantiate the controller": (done)->

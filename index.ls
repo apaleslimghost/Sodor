@@ -24,10 +24,11 @@ id = (a)-> a
 join = (`flat-map` id)
 #### Symbols
 # Create some symbols so we don't overwrite things or get things overwritten
-export root   = Symbol \root
-export alias  = Symbol \alias
-export method = Symbol \method
-export pirate = Symbol \private
+export root    = Symbol \root
+export alias   = Symbol \alias
+export method  = Symbol \method
+export pirate  = Symbol \private
+export special = Symbol \special
 # `Path`
 # ---
 #
@@ -65,6 +66,9 @@ export class Controller extends Base
 	##### `root :: Action → Action`
 	# Sets `root` to true for the action
 	@private = (obj ? this) -> obj import {+(pirate)}
+	##### `root :: Action → Action`
+	# Sets `root` to true for the action
+	@special = (obj ? this) -> obj import {+(special)}
 	##### Method decorators
 	# These are `method` partially applied with the usual HTTP methods
 	for m in <[get post put delete patch options head trace connect]>
@@ -98,7 +102,7 @@ export class Controller extends Base
 		method = @::[action]
 
 		join [
-			[Path base, action]
+			[Path base, action] `array-if` not method[special]
 			[Path base] `array-if` (method[root] or @[root])
 			(method[alias]?map Path.parse) `array-if` method[alias]?
 		] `array-if` not method[pirate]
