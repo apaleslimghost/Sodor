@@ -3,7 +3,7 @@ require! {
 	rewire
 }
 
-{Controller}:sodor = rewire './index.js'
+{Controller, root}:sodor = rewire './index.js'
 
 export "Sodor Controller":
 	"method":
@@ -23,7 +23,11 @@ export "Sodor Controller":
 		"should set root to be true": ->
 			o = {}
 			Controller.root o
-			expect o .to.have.property \root true
+			expect o .to.have.property root, true
+		"can apply to whole controller": ->
+			class Test extends Controller
+			Test.root!
+			expect Test .to.have.property root, true
 			
 	"alias":
 		"should add a alias property": ->
@@ -68,6 +72,13 @@ export "Sodor Controller":
 		"should create root paths for a root-annotated action": ->
 			class Foo extends Controller
 				bar: @root ->
+
+			expect Foo.make-paths \bar [] .to.contain '/foo'
+
+		"should create root paths for a root-annotated controller": ->
+			class Foo extends Controller
+				@root!
+				bar: ->
 
 			expect Foo.make-paths \bar [] .to.contain '/foo'
 

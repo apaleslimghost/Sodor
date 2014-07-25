@@ -5,6 +5,7 @@ require! {
 	'get-parameter-names'
 	'livewire/lib/respond'
 	path.normalize
+	Symbol: 'es6-symbol'
 	Base: estira
 }
 #### Some functional helpers
@@ -21,11 +22,13 @@ array-if = (xs, cond)-->
 id = (a)-> a
 ##### `join :: Array Array a → Array a`
 join = (`flat-map` id)
+#### Symbols
+# Create some symbols so we don't overwrite things or get things overwritten
+export root = Symbol \root
 # `Path`
 # ---
 #
 # Utility class for constructing and parsing paths, so as we don't accidentally munge arrays together.
-
 export class Path
 ##### `parse :: String → Path`
 	@parse = (path)->
@@ -55,7 +58,7 @@ export class Controller extends Base
 		action
 	##### `root :: Action → Action`
 	# Sets `root` to true for the action
-	@root = (import {+root})
+	@root = (obj ? this) -> obj import {+(root)}
 	##### Method decorators
 	# These are `method` partially applied with the usual HTTP methods
 	for m in <[get post put delete patch options head trace connect]>
@@ -90,7 +93,7 @@ export class Controller extends Base
 
 		join [
 			[Path base, action]
-			[Path base] `array-if` @::[action].root
+			[Path base] `array-if` (@::[action][root] or @[root])
 			(@::[action].alias?map Path.parse) `array-if` @::[action].alias?
 		] .map make-path . (++ params-parts)
 	##### `handle :: String → [String] → (Request → Promise Response`
