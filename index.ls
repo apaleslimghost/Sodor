@@ -22,6 +22,8 @@ array-if = (xs, cond)-->
 id = (a)-> a
 ##### `join :: Array Array a → Array a`
 join = (`flat-map` id)
+##### `props :: Object → [String]`
+props = -> [.. for Object.get-own-property-names it | .. isnt \constructor]
 #### Symbols
 # Create some symbols so we don't overwrite things or get things overwritten
 export root    = Symbol \root
@@ -76,8 +78,7 @@ export class Controller extends Base
 	##### `routes :: [Request → Maybe Promise Response]`
 	# Collect the actions together into an array of routes
 	@routes = ->
-		action <~ flat-map Object.keys @::
-		<~ flat-map guard action not of Controller::
+		action <~ flat-map @action-names!
 
 		params = get-parameter-names @::[action]
 		handler = @handle action, params
@@ -87,6 +88,11 @@ export class Controller extends Base
 			@::[action][method] ? \get
 			path
 			handler
+	##### `action-names :: [String]`
+	# Get a list of the class' method names
+	@action-names = ->
+		| this is Controller => []
+		| otherwise => @superclass.action-names! ++ props @::
 	##### `base-path :: → Path`
 	# Gets the base path for this controller. If Controller.base is specified, use that, otherwise use the class name in lower case.
 	@base-path = ->
