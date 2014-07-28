@@ -76,8 +76,7 @@ export class Controller extends Base
 	##### `routes :: [Request → Maybe Promise Response]`
 	# Collect the actions together into an array of routes
 	@routes = ->
-		action <~ flat-map Object.keys @::
-		<~ flat-map guard action not of Controller::
+		action <~ flat-map @action-names!
 
 		params = get-parameter-names @::[action]
 		handler = @handle action, params
@@ -87,6 +86,12 @@ export class Controller extends Base
 			@::[action][method] ? \get
 			path
 			handler
+	##### `action-names :: [String]`
+	# Get a list of the class' method names
+	@action-names = ->
+		action <~ flat-map Object.keys @::
+		<~ flat-map guard action not of Controller::
+		action
 	##### `base-path :: → Path`
 	# Gets the base path for this controller. If Controller.base is specified, use that, otherwise use the class name in lower case.
 	@base-path = ->

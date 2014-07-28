@@ -239,3 +239,17 @@ export "Sodor Controller":
 
 		expect Foo.make-paths \bar [] .to.contain '/foo/bar'
 
+	"action-names":
+		"should get a list of methods": ->
+			class Foo extends Controller
+				bar: ->
+				baz: ->
+
+			expect Foo.action-names! .to.contain 'bar'
+			expect Foo.action-names! .to.contain 'baz'
+
+		"shouldn't include internal prototype stuff": ->
+			class Foo extends Controller
+			expect Foo.action-names! .not.to.contain 'constructor'
+			expect Foo.action-names! .not.to.contain '__proto__'
+
