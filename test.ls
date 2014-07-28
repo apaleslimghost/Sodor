@@ -253,3 +253,11 @@ export "Sodor Controller":
 			expect Foo.action-names! .not.to.contain 'constructor'
 			expect Foo.action-names! .not.to.contain '__proto__'
 
+		"should see inherited things": ->
+			class Foo extends Controller
+				bar: ->
+
+			class Baz extends Foo
+
+			expect Baz.action-names! .to.contain 'bar'
+
