@@ -61,13 +61,13 @@ export class Controller
 		action[alias] = action.[][alias].concat aka
 		action
 	##### `root :: Action → Action`
-	# Sets `root` to true for the action
+	# Sets `root` to true for the action. Root actions operate on the root of the controller path.
 	@root = (obj ? this) -> obj import {+(root)}
-	##### `root :: Action → Action`
-	# Sets `root` to true for the action
+	##### `private :: Action → Action`
+	# Sets `private` to true for the action. Private actions don't generate any routes, but are available to call by other actions.
 	@private = (obj ? this) -> obj import {+(pirate)}
-	##### `root :: Action → Action`
-	# Sets `root` to true for the action
+	##### `special :: Action → Action`
+	# Sets `special` to true for the action. Special actions don't generate the default `/controller/action` route, but any root or alias routes are still generated.
 	@special = (obj ? this) -> obj import {+(special)}
 	##### Method decorators
 	# These are `method` partially applied with the usual HTTP methods
@@ -98,7 +98,7 @@ export class Controller
 	##### `make-paths :: String → [String] → Path`
 	# Turn an action name and some parameter names into a path, potentially in 3 different ways:
 	#   1. /class-name/action-name/params unless the action is `special`
-	#   2. /class-name/params if the action has `root` set
+	#   2. /class-name/params if the action has `root` set or is called index
 	#   3. /alias/params if the action has an `alias`
 	# If the action is `private`, no routes are generated. It can, however, be called internally from other routes.
 	@make-paths = (action, params)->
@@ -114,6 +114,8 @@ export class Controller
 		.map (.to-string!) . (++ params-parts)
 	##### `handle :: String → [String] → (Request → Promise Response)`
 	# Wrap an action in a Livewire-compatible route handler that assigns parameters and instantiates the controller before calling the correct action.
+	#
+	# If the class has a `context` method, it's called with the action name, and together with the controller itself provides the context for the action.
 	@handle = (action, params)-> (req)~>
 		values = [req.params[k] for k in params]
 		controller = new this req
