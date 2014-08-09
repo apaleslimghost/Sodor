@@ -61,13 +61,13 @@ export class Controller
 		action[alias] = action.[][alias].concat aka
 		action
 	##### `root :: Action → Action`
-	# Sets `root` to true for the action
+	# Sets `root` to true for the action. Root actions operate on the root of the controller path.
 	@root = (obj ? this) -> obj import {+(root)}
 	##### `private :: Action → Action`
-	# Sets `private` to true for the action
+	# Sets `private` to true for the action. Private actions don't generate any routes, but are available to call by other actions.
 	@private = (obj ? this) -> obj import {+(pirate)}
 	##### `special :: Action → Action`
-	# Sets `special` to true for the action
+	# Sets `special` to true for the action. Special actions don't generate the default `/controller/action` route, but any root or alias routes are still generated.
 	@special = (obj ? this) -> obj import {+(special)}
 	##### Method decorators
 	# These are `method` partially applied with the usual HTTP methods
