@@ -102,6 +102,12 @@ export "Sodor Controller":
 
 			expect Foo.make-paths \bar [] .to.contain '/foo'
 
+		"should create root paths for index action": ->
+			class Foo extends Controller
+				index: ->
+
+			expect Foo.make-paths \index [] .to.contain '/foo'
+
 		"should create root paths for a root-annotated controller": ->
 			class Foo extends Controller
 				@root!

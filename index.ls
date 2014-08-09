@@ -108,7 +108,7 @@ export class Controller
 
 		join [
 			[Path base, action] `array-if` not method[special]
-			[Path base] `array-if` (method[root] or @[root])
+			[Path base] `array-if` (method[root] or @[root] or action is \index)
 			(method[alias]?map Path.parse) `array-if` method[alias]?
 		] `array-if` not method[pirate]
 		.map (.to-string!) . (++ params-parts)
