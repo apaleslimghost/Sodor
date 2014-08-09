@@ -261,3 +261,14 @@ export "Sodor Controller":
 
 			expect Baz.action-names! .to.contain 'bar'
 
+	"context should provide a supplimentary context to the thing": (done)->
+		req = {}
+		class Foo extends Controller
+			@context = (action)-> {action}
+			bar: ->
+				expect this .to.have.property \action \bar
+				expect this .to.have.property \request req
+				done!
+
+		(Foo.handle \bar []) req
+		

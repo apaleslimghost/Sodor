@@ -114,9 +114,12 @@ export class Controller extends Base
 			(method[alias]?map Path.parse) `array-if` method[alias]?
 		] `array-if` not method[pirate]
 		.map (.to-string!) . (++ params-parts)
-	##### `handle :: String → [String] → (Request → Promise Response`
+	##### `handle :: String → [String] → (Request → Promise Response)`
 	# Wrap an action in a Livewire-compatible route handler that assigns parameters and instantiates the controller before calling the correct action.
 	@handle = (action, params)-> (req)~>
 		values = [req.params[k] for k in params]
 		controller = new this req
-		controller[action] ...values
+		context = if @context?
+			(@context action) import controller
+		else controller
+		controller[action].apply context, values
