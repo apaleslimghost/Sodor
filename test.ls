@@ -102,6 +102,12 @@ export "Sodor Controller":
 
 			expect Foo.make-paths \bar [] .to.contain '/foo'
 
+		"should create root paths for index action": ->
+			class Foo extends Controller
+				index: ->
+
+			expect Foo.make-paths \index [] .to.contain '/foo'
+
 		"should create root paths for a root-annotated controller": ->
 			class Foo extends Controller
 				@root!
@@ -232,13 +238,6 @@ export "Sodor Controller":
 
 			expect Foo.routes! .to.contain \a
 
-	"should be extendable via Estira": ->
-		Foo = Controller.extend \Foo {
-			bar: ->
-		}
-
-		expect Foo.make-paths \bar [] .to.contain '/foo/bar'
-
 	"action-names":
 		"should get a list of methods": ->
 			class Foo extends Controller
@@ -261,3 +260,14 @@ export "Sodor Controller":
 
 			expect Baz.action-names! .to.contain 'bar'
 
+	"context should provide a supplimentary context to the thing": (done)->
+		req = {}
+		class Foo extends Controller
+			@context = (action)-> {action}
+			bar: ->
+				expect this .to.have.property \action \bar
+				expect this .to.have.property \request req
+				done!
+
+		(Foo.handle \bar []) req
+		

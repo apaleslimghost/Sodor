@@ -6,7 +6,6 @@ require! {
 	'livewire/lib/respond'
 	path.normalize
 	Symbol: 'es6-symbol'
-	Base: estira
 }
 #### Some functional helpers
 ##### `flat-map :: Array a → (a → (Array b | b)) → Array b`
@@ -51,8 +50,7 @@ export class Path
 #
 # The main class we export. Consumers should extend this.
 #
-# Since we extend `Base` (i.e. [Estira](/quarterto/Estira)), Javascript consumers can write `Controller.extend('Foo', {bar: function() {...}})`. 
-export class Controller extends Base
+export class Controller
 	##### `constructor`
 	# We save the request to the instance (as we see later, it's one instance ⇔ one request).
 	(@request)->
@@ -63,13 +61,13 @@ export class Controller extends Base
 		action[alias] = action.[][alias].concat aka
 		action
 	##### `root :: Action → Action`
-	# Sets `root` to true for the action
+	# Sets `root` to true for the action. Root actions operate on the root of the controller path.
 	@root = (obj ? this) -> obj import {+(root)}
-	##### `root :: Action → Action`
-	# Sets `root` to true for the action
+	##### `private :: Action → Action`
+	# Sets `private` to true for the action. Private actions don't generate any routes, but are available to call by other actions.
 	@private = (obj ? this) -> obj import {+(pirate)}
-	##### `root :: Action → Action`
-	# Sets `root` to true for the action
+	##### `special :: Action → Action`
+	# Sets `special` to true for the action. Special actions don't generate the default `/controller/action` route, but any root or alias routes are still generated.
 	@special = (obj ? this) -> obj import {+(special)}
 	##### Method decorators
 	# These are `method` partially applied with the usual HTTP methods
@@ -100,7 +98,7 @@ export class Controller extends Base
 	##### `make-paths :: String → [String] → Path`
 	# Turn an action name and some parameter names into a path, potentially in 3 different ways:
 	#   1. /class-name/action-name/params unless the action is `special`
-	#   2. /class-name/params if the action has `root` set
+	#   2. /class-name/params if the action has `root` set or is called index
 	#   3. /alias/params if the action has an `alias`
 	# If the action is `private`, no routes are generated. It can, however, be called internally from other routes.
 	@make-paths = (action, params)->
@@ -110,13 +108,18 @@ export class Controller extends Base
 
 		join [
 			[Path base, action] `array-if` not method[special]
-			[Path base] `array-if` (method[root] or @[root])
+			[Path base] `array-if` (method[root] or @[root] or action is \index)
 			(method[alias]?map Path.parse) `array-if` method[alias]?
 		] `array-if` not method[pirate]
 		.map (.to-string!) . (++ params-parts)
-	##### `handle :: String → [String] → (Request → Promise Response`
+	##### `handle :: String → [String] → (Request → Promise Response)`
 	# Wrap an action in a Livewire-compatible route handler that assigns parameters and instantiates the controller before calling the correct action.
+	#
+	# If the class has a `context` method, it's called with the action name, and together with the controller itself provides the context for the action.
 	@handle = (action, params)-> (req)~>
 		values = [req.params[k] for k in params]
 		controller = new this req
-		controller[action] ...values
+		context = if @context?
+			(@context action) import controller
+		else controller
+		controller[action].apply context, values
