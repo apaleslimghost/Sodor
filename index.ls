@@ -63,11 +63,11 @@ export class Controller
 	##### `root :: Action → Action`
 	# Sets `root` to true for the action
 	@root = (obj ? this) -> obj import {+(root)}
-	##### `root :: Action → Action`
-	# Sets `root` to true for the action
+	##### `private :: Action → Action`
+	# Sets `private` to true for the action
 	@private = (obj ? this) -> obj import {+(pirate)}
-	##### `root :: Action → Action`
-	# Sets `root` to true for the action
+	##### `special :: Action → Action`
+	# Sets `special` to true for the action
 	@special = (obj ? this) -> obj import {+(special)}
 	##### Method decorators
 	# These are `method` partially applied with the usual HTTP methods
