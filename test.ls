@@ -232,13 +232,6 @@ export "Sodor Controller":
 
 			expect Foo.routes! .to.contain \a
 
-	"should be extendable via Estira": ->
-		Foo = Controller.extend \Foo {
-			bar: ->
-		}
-
-		expect Foo.make-paths \bar [] .to.contain '/foo/bar'
-
 	"action-names":
 		"should get a list of methods": ->
 			class Foo extends Controller

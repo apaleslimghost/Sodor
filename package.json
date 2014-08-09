@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "es6-symbol": "^0.1.0",
-    "estira": "^0.3.2",
     "get-parameter-names": "^0.2.0",
     "livewire": "^0.5.1"
   }

@@ -6,7 +6,6 @@ require! {
 	'livewire/lib/respond'
 	path.normalize
 	Symbol: 'es6-symbol'
-	Base: estira
 }
 #### Some functional helpers
 ##### `flat-map :: Array a → (a → (Array b | b)) → Array b`
@@ -51,8 +50,7 @@ export class Path
 #
 # The main class we export. Consumers should extend this.
 #
-# Since we extend `Base` (i.e. [Estira](/quarterto/Estira)), Javascript consumers can write `Controller.extend('Foo', {bar: function() {...}})`. 
-export class Controller extends Base
+export class Controller
 	##### `constructor`
 	# We save the request to the instance (as we see later, it's one instance ⇔ one request).
 	(@request)->
