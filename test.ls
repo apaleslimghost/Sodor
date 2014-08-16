@@ -192,6 +192,10 @@ export "Sodor Controller":
 			expect.sinon.stub Controller, \handle
 			expect.sinon.stub Controller, \makePaths
 
+		after: ->
+			Controller.handle.restore!
+			Controller.make-paths.restore!
+
 		before-each: ->
 			Controller.make-paths.returns ['/']
 			Controller.handle.returns ->
@@ -270,4 +274,4 @@ export "Sodor Controller":
 				done!
 
 		(Foo.handle \bar []) req
-		
+
