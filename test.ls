@@ -192,6 +192,10 @@ export "Sodor Controller":
 			expect.sinon.stub Controller, \handle
 			expect.sinon.stub Controller, \makePaths
 
+		after: ->
+			Controller.handle.restore!
+			Controller.make-paths.restore!
+
 		before-each: ->
 			Controller.make-paths.returns ['/']
 			Controller.handle.returns ->
@@ -260,14 +264,27 @@ export "Sodor Controller":
 
 			expect Baz.action-names! .to.contain 'bar'
 
-	"context should provide a supplimentary context to the thing": (done)->
-		req = {}
-		class Foo extends Controller
-			@context = (action)-> {action}
-			bar: ->
-				expect this .to.have.property \action \bar
-				expect this .to.have.property \request req
-				done!
+	"context":
+		"should provide a supplimentary context to the thing": (done)->
+			req = {}
+			class Foo extends Controller
+				@context = (action)-> {action}
+				bar: ->
+					expect this .to.have.property \action \bar
+					expect this .to.have.property \request req
+					done!
 
-		(Foo.handle \bar []) req
-		
+			(Foo.handle \bar []) req
+
+		"should work with inherited methods": (done)->
+			req = {}
+			class Foo extends Controller
+				baz: ->
+			class Bar extends Foo
+				@context = (action)-> {action}
+				quux: ->
+					expect @baz .to.be.a Function
+					done!
+
+			(Bar.handle \quux []) req
+
