@@ -120,6 +120,6 @@ export class Controller
 		values = [req.params[k] for k in params]
 		controller = new this req
 		context = if @context?
-			(@context action) import controller
+			(@context action) import all controller
 		else controller
 		controller[action].apply context, values
