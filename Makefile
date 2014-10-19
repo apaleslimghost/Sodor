@@ -1,15 +1,17 @@
+SHELL := /bin/bash
+PATH  := $(shell npm bin):$(PATH)
 LSC_OPTS = -b -k
 
-%.js: %.ls
-	node_modules/.bin/lsc $(LSC_OPTS) -c "$<"
+lib/%.js: src/%.ls
+	lsc $(LSC_OPTS) -c "$<"
 
-all: index.js
+all: lib/index.js
 
 test: all test.ls
-	node_modules/.bin/mocha -r LiveScript -u exports test.ls
+	mocha -r LiveScript -u exports test.ls
 
-docs/%.md: %.ls
-	node_modules/.bin/sug convert -o docs $<
+docs/%.md: src/%.ls
+	sug convert -o docs $<
 
 docs: docs/index.md
 
