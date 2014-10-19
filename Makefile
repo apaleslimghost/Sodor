@@ -1,9 +1,9 @@
 SHELL := /bin/bash
 PATH  := $(shell npm bin):$(PATH)
-LSC_OPTS = -b -k
+TRACEUR_OPTS = --experimental --modules commonjs
 
-lib/%.js: src/%.ls
-	lsc $(LSC_OPTS) -c "$<"
+lib/%.js: src/%.js
+	traceur $(TRACEUR_OPTS) --out $@ $<
 
 all: lib/index.js
 

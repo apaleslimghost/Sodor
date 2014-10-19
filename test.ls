@@ -10,7 +10,7 @@ require! {
 	method,
 	pirate,
 	special
-}:sodor = rewire './index.js'
+}:sodor = rewire './lib/index.js'
 
 export "Sodor Controller":
 	"method":
