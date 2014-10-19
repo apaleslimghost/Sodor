@@ -4,6 +4,7 @@ TRACEUR_OPTS = --experimental --modules commonjs
 
 lib/%.js: src/%.js
 	traceur $(TRACEUR_OPTS) --out $@ $<
+	echo 'require("traceur/bin/traceur-runtime");' | cat - $@ > /tmp/out && mv /tmp/out $@
 
 all: lib/index.js
 
