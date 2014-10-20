@@ -10,7 +10,7 @@ require! {
 	method,
 	pirate,
 	special
-}:sodor = rewire './index.js'
+}:sodor = rewire './lib/index.js'
 
 export "Sodor Controller":
 	"method":
@@ -164,13 +164,13 @@ export "Sodor Controller":
 					expect c .to.be.called!
 					done!
 
-			(Foo.handle \bar Foo::bar, [])!
+			(Foo.handle \bar [])!
 
 		"should pass through return values": ->
 			class Foo extends Controller
 				bar: -> \world
 
-			o = Foo.handle \bar Foo::bar, []
+			o = Foo.handle \bar []
 			expect o! .to.be \world
 
 		"should send url parameters to the right places": (done)->

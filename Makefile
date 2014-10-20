@@ -1,15 +1,19 @@
-LSC_OPTS = -b -k
+SHELL := /bin/bash
+PATH  := $(shell npm bin):$(PATH)
+TRACEUR_OPTS = --experimental --modules commonjs
 
-%.js: %.ls
-	node_modules/.bin/lsc $(LSC_OPTS) -c "$<"
+lib/%.js: src/%.js
+	traceur $(TRACEUR_OPTS) --out $@ $<
+	echo 'require("traceur/bin/traceur-runtime");' | cat - $@ > /tmp/out && mv /tmp/out $@
 
-all: index.js
+all: lib/index.js
 
 test: all test.ls
-	node_modules/.bin/mocha -r LiveScript -u exports test.ls
+	echo -e '//#sourceMappingURL=./index.map\nrequire("source-map-support").install();' | cat - lib/index.js > /tmp/out && mv /tmp/out lib/index.js
+	mocha -r LiveScript -u exports test.ls
 
-docs/%.md: %.ls
-	node_modules/.bin/sug convert -o docs $<
+docs/%.md: src/%.ls
+	sug convert -o docs $<
 
 docs: docs/index.md
 
