@@ -90,11 +90,11 @@ Object.assign(Controller, {
 	//#### `routes :: [Request → Maybe Promise Response]`
 	// Collect the actions together into an array of routes
 	routes() {
-		return flatMap(this.actionNames(), function(action) {
+		return flatMap(this.actionNames(), (action) => {
 			var params = getParameterNames(this.prototype[action]);
 			var handler = this.handle(action, params);
 
-			flatMap(this.makePaths(action, params), function(path) {
+			flatMap(this.makePaths(action, params), (path) => {
 				return respond(
 					this.prototype[action][method] || 'get',
 					path,
