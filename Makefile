@@ -9,6 +9,7 @@ lib/%.js: src/%.js
 all: lib/index.js
 
 test: all test.ls
+	echo -e '//#sourceMappingURL=./index.map\nrequire("source-map-support").install();' | cat - lib/index.js > /tmp/out && mv /tmp/out lib/index.js
 	mocha -r LiveScript -u exports test.ls
 
 docs/%.md: src/%.ls

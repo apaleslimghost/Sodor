@@ -125,7 +125,6 @@ Object.assign(Controller, {
 		var base = this.basePath();
 		var method = this.prototype[action];
 
-
 		return join(arrayIf([
 			arrayIf([new Path(base, action)], !method[special]),
 			arrayIf([new Path(base)], (method[root] || this[root] || action === 'index')),
