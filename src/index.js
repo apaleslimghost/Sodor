@@ -94,7 +94,7 @@ Object.assign(Controller, {
 			var params = getParameterNames(this.prototype[action]);
 			var handler = this.handle(action, params);
 
-			flatMap(this.makePaths(action, params), (path) => {
+			return flatMap(this.makePaths(action, params), (path) => {
 				return respond(
 					this.prototype[action][method] || 'get',
 					path,
