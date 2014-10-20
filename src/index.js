@@ -21,6 +21,13 @@ var id = (a) => a;
 var join = (a) => flatMap(a, id);
 //#### `props :: Object → [String]`
 var props = (obj) => [for(name of Object.getOwnPropertyNames(obj)) if(name !== 'constructor') name];
+//#### `assignAll :: Object → Object → Object`
+var assignAll = (d,s) => {
+	for(var p in s) {
+		d[p] = s[p];
+	}
+	return d;
+};
 //### Symbols
 // Create some symbols so we don't overwrite things or get things overwritten
 export var root    = Symbol('root');
@@ -141,7 +148,7 @@ Object.assign(Controller, {
 		return (req) => {
 			var values = [for(k of params) req.params[k]];
 			var controller = new this(req);
-			var context = this.context? Object.assign(this.context(action), controller)
+			var context = this.context? assignAll(this.context(action), controller)
 			            : controller;
 			return controller[action].apply(context, values);
 		};
