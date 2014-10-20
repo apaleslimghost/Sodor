@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/quarterto/Sodor",
   "devDependencies": {
-    "LiveScript": "^1.2.0",
+    "LiveScript": "~1.2.0",
     "karma-sinon-expect": "^0.1.4",
     "mocha": "^1.21.5",
     "rewire": "^2.0.1",
@@ -34,7 +34,6 @@
   },
   "dependencies": {
     "curry": "^1.2.0",
-    "es6-symbol": "^0.1.0",
     "get-parameter-names": "^0.2.0",
     "livewire": "^0.5.1",
     "traceur": "0.0.72"
