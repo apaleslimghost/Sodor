@@ -125,12 +125,14 @@ Object.assign(Controller, {
 		var base = this.basePath();
 		var method = this.prototype[action];
 
+
 		return join(arrayIf([
 			arrayIf([new Path(base, action)], !method[special]),
-			arrayIf([new Path(base)], (method[root] || this[root] || action === 'index'),
-			arrayIf(method[alias] && method[alias].map(Path.parse)), method[alias])
-		], !method[pirate])
-		.map((p) => p.concat(paramsParts).toString()));
+			arrayIf([new Path(base)], (method[root] || this[root] || action === 'index')),
+			arrayIf(method[alias] && method[alias].map((p) => Path.parse(p)), method[alias])
+		], !method[pirate])).map((p) => {
+			return p.concat(paramsParts).toString();
+		});
 	},
 	//#### `handle :: String → [String] → (Request → Promise Response)`
 	// Wrap an action in a Livewire-compatible route handler that assigns parameters and instantiates the controller before calling the correct action.
