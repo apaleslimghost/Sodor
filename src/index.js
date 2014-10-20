@@ -107,7 +107,7 @@ Object.assign(Controller, {
 	// Get a list of the class' method names
 	actionNames() {
 		return this === Controller? []
-		     : /* otherwise */      this.__proto__.actionNames().concat(props(this.prototype));
+		     : /* otherwise */      this.superclass.actionNames().concat(props(this.prototype));
 	},
 	//#### `base-path :: → Path`
 	// Gets the base path for this controller. If Controller.base is specified, use that, otherwise use the class name in lower case.
