@@ -173,9 +173,9 @@ Object.assign(Controller, {
 //#### Method decorators
 // These are `method` partially applied with the usual HTTP methods
 for(var m of ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace', 'connect']) {
-	Controller[m] = class extends Controller.method {
+	Controller[m] = Controller.method.extend({
 		init() {
-			super.init(m);
+			Controller.method.prototype.init.call(this,m);
 		}
-	};
+	});
 }
