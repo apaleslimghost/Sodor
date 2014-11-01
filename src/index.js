@@ -68,7 +68,7 @@ Annotation.extend = function (proto = {}) {
 			if(this instanceof Annotation) {
 				this.init(...args);
 			} else {
-				var obj = args.pop();
+				var obj = args.pop() || this;
 				obj.annotations = obj.annotations || [];
 				obj.annotations.push(new sub(...args));
 				return obj; // for chaining
@@ -149,7 +149,7 @@ Object.assign(Controller, {
 
 		return join(arrayIf([
 			arrayIf([new Path(base, action)], !this.special.has(method)),
-			arrayIf([new Path(base)], (this.special.has(method) || this.special.has(this) || action === 'index')),
+			arrayIf([new Path(base)], (this.root.has(method) || this.root.has(this) || action === 'index')),
 			arrayIf(this.alias.has(method) && this.alias.has(method).alias.map((p) => Path.parse(p)), this.alias.has(method))
 		], !this.private.has(method))).map((p) => {
 			return p.concat(paramsParts).toString();
