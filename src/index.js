@@ -60,7 +60,7 @@ Path.parse = function(path) {
 class Annotation { init() {} }
 //#### `has :: Object → Maybe Annotation`
 Annotation.has = function (obj) {
-	return obj.annotations.find((a) => a instanceof this);
+	return (obj.annotations || []).find((a) => a instanceof this);
 };
 Annotation.extend = function (proto = {}) {
 	var sub = class extends Annotation {
