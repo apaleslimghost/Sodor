@@ -63,7 +63,7 @@ Annotation.has = function (obj) {
 	return (obj.annotations || []).find((a) => a instanceof this);
 };
 Annotation.extend = function (proto = {}) {
-	var sub = class extends Annotation {
+	var sub = class extends this {
 		constructor(...args) {
 			if(this instanceof Annotation) {
 				this.init(...args);
@@ -172,10 +172,10 @@ Object.assign(Controller, {
 
 //#### Method decorators
 // These are `method` partially applied with the usual HTTP methods
-for(var m of ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace', 'connect']) {
+['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace', 'connect'].forEach((m) => {
 	Controller[m] = Controller.method.extend({
 		init() {
 			Controller.method.prototype.init.call(this,m);
 		}
 	});
-}
+});
