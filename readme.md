@@ -1,4 +1,7 @@
-# Sodor
+<h1 align="center">
+Sodor<br>
+<a href="https://travis-ci.org/quarterto/Sodor"><img src="https://travis-ci.org/quarterto/Sodor.svg?branch=develop"></a>
+</h1>
 
 Controller dispatching for Livewire. Which lets you write routes like
 
