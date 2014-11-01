@@ -1,2 +1,4 @@
 node_modules
-*.js
+test.js
+lib
+test-lib

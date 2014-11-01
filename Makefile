@@ -1,15 +1,29 @@
-LSC_OPTS = -b -k
+SHELL := /bin/bash
+PATH  := $(shell npm bin):$(PATH)
+TRACEUR_OPTS = --experimental --modules commonjs
+TEST_SRC = $(wildcard test-src/*)
+TEST_FILES := $(patsubst test-src/%,test-lib/%,$(TEST_SRC))
+TEST_FILES := $(patsubst test-lib/%.ls,test-lib/%.js,$(TEST_FILES))
 
-%.js: %.ls
-	node_modules/.bin/lsc $(LSC_OPTS) -c "$<"
 
-all: index.js
+lib/%.js: src/%.js
+	traceur $(TRACEUR_OPTS) --out $@ $<
+	echo 'require("traceur/bin/traceur-runtime");' | cat - $@ > /tmp/out && mv /tmp/out $@
 
-test: all test.ls
-	node_modules/.bin/mocha -r LiveScript -u exports test.ls
+test-lib/%.js: test-src/%.js
+	traceur $(TRACEUR_OPTS) --out $@ $<
+	echo 'require("traceur/bin/traceur-runtime");' | cat - $@ > /tmp/out && mv /tmp/out $@
 
-docs/%.md: %.ls
-	node_modules/.bin/sug convert -o docs $<
+test-lib/%.js: test-src/%.ls
+	lsc -o test-lib -c $<
+
+all: lib/index.js
+
+test: all $(TEST_FILES)
+	mocha -u exports $(TEST_FILES)
+
+docs/%.md: src/%.js
+	sug convert -o docs $<
 
 docs: docs/index.md
 

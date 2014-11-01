@@ -3,70 +3,48 @@ require! {
 	rewire
 }
 
-{
-	Controller,
-	root,
-	alias,
-	method,
-	pirate,
-	special
-}:sodor = rewire './index.js'
+{Controller}:sodor = rewire '../lib/index.js'
 
 export "Sodor Controller":
 	"method":
-		"should add a method property": ->
+		"should add a method annotation": ->
 			o = {}
 			Controller.method \a o
-			expect o .to.have.property method, \a
+			expect o.annotations.0 .to.be.a Controller.method
+			expect o.annotations.0 .to.have.property \method \a
+
 
 		"should have shorthands for http methods": {[
 			m, ->
 				o = {}
 				Controller[m] o
-				expect o .to.have.property method, m
+				expect o.annotations.0 .to.have.property \method m
 		] for m in <[get post put delete patch options head trace connect]>}
 
 	"root":
-		"should set root to be true": ->
+		"should add a root annotation": ->
 			o = {}
 			Controller.root o
-			expect o .to.have.property root, true
-		"can apply to whole controller": ->
-			class Test extends Controller
-			Test.root!
-			expect Test .to.have.property root, true
+			expect o.annotations.0 .to.be.a Controller.root
 
 	"private":
-		"should set private to be true": ->
+		"should add a private annotation": ->
 			o = {}
 			Controller.private o
-			expect o .to.have.property pirate, true
-		"can apply to whole controller": ->
-			class Test extends Controller
-			Test.private!
-			expect Test .to.have.property pirate, true
+			expect o.annotations.0 .to.be.a Controller.private
 
 	"special":
-		"should set special to be true": ->
+		"should add a special annotation": ->
 			o = {}
 			Controller.special o
-			expect o .to.have.property special, true
-		"can apply to whole controller": ->
-			class Test extends Controller
-			Test.special!
-			expect Test .to.have.property special, true
+			expect o.annotations.0 .to.be.a Controller.special
 
 	"alias":
-		"should add a alias property": ->
+		"should add an alias annotation": ->
 			o = {}
 			Controller.alias \a o
-			expect o[alias] .to.contain \a
-		"should add multiple aliae": ->
-			o = {}
-			Controller.alias \a o
-			Controller.alias \b o
-			expect o[alias] .to.contain \a
-			expect o[alias] .to.contain \b
+			expect o.annotations.0 .to.be.a Controller.alias
+			expect o.annotations.0.alias .to.eql [\a]
 
 	"make-paths":
 		"should return a path based on classname and action name": ->
@@ -164,13 +142,13 @@ export "Sodor Controller":
 					expect c .to.be.called!
 					done!
 
-			(Foo.handle \bar Foo::bar, [])!
+			(Foo.handle \bar [])!
 
 		"should pass through return values": ->
 			class Foo extends Controller
 				bar: -> \world
 
-			o = Foo.handle \bar Foo::bar, []
+			o = Foo.handle \bar []
 			expect o! .to.be \world
 
 		"should send url parameters to the right places": (done)->
@@ -241,6 +219,13 @@ export "Sodor Controller":
 				a: ->
 
 			expect Foo.routes! .to.contain \a
+
+		"should get parameter names from function params": ->
+			class Foo extends Controller
+				a: (a, b, c)->
+
+			Foo.routes!
+			expect Foo.handle .to.be.called-with \a [\a \b \c]
 
 	"action-names":
 		"should get a list of methods": ->

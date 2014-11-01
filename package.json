@@ -1,6 +1,6 @@
 {
   "name": "sodor",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "controller dispatching for livewire",
   "main": "index.js",
   "scripts": {
@@ -24,15 +24,18 @@
   },
   "homepage": "https://github.com/quarterto/Sodor",
   "devDependencies": {
-    "LiveScript": "^1.2.0",
+    "LiveScript": "~1.2.0",
     "karma-sinon-expect": "^0.1.4",
-    "mocha": "^1.20.1",
+    "mocha": "^1.21.5",
     "rewire": "^2.0.1",
-    "sug": "git://github.com/quarterto/sug#patch-1"
+    "source-map-support": "^0.2.7",
+    "sug": "git://github.com/quarterto/sug#patch-1",
+    "traceur": "0.0.72"
   },
   "dependencies": {
-    "es6-symbol": "^0.1.0",
+    "curry": "^1.2.0",
     "get-parameter-names": "^0.2.0",
-    "livewire": "^0.5.1"
+    "livewire": "^0.5.1",
+    "traceur": "0.0.72"
   }
 }

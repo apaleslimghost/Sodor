@@ -1,12 +1,17 @@
-# Sodor [![Build Status](https://travis-ci.org/quarterto/Sodor.svg?branch=master)](https://travis-ci.org/quarterto/Sodor)
+<h1 align="center">
+Sodor<br>
+<a href="https://travis-ci.org/quarterto/Sodor"><img src="https://travis-ci.org/quarterto/Sodor.svg?branch=develop"></a>
+</h1>
 
 Controller dispatching for Livewire. Which lets you write routes like
 
-```livescript
-class Post extends Controller
-  read: (id)-> ...
-  update: @put  (id)-> ...
-  delete: @post (id)-> ...
+```javascript
+class Post extends Controller {
+  read(id) { ... }
+  @put update(id) { ... }
+  @post delete(id) { ... }
+}
+/* ES6 with Traceur annotations */
 ```
 
 where the function arguments become URL parameters and http method decorators do what you think.
