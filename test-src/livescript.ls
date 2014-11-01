@@ -3,27 +3,22 @@ require! {
 	rewire
 }
 
-{
-	Controller,
-	root,
-	alias,
-	method,
-	pirate,
-	special
-}:sodor = rewire '../lib/index.js'
+{Controller}:sodor = rewire '../lib/index.js'
 
 export "Sodor Controller":
 	"method":
-		"should add a method property": ->
+		"should add a method annotation": ->
 			o = {}
 			Controller.method \a o
-			expect o .to.have.property method, \a
+			expect o.annotations.0 .to.be.a Controller.method
+			expect o.annotations.0 .to.have.property \method \a
+
 
 		"should have shorthands for http methods": {[
 			m, ->
 				o = {}
 				Controller[m] o
-				expect o .to.have.property method, m
+				expect o.annotations.0 .to.have.property \method m
 		] for m in <[get post put delete patch options head trace connect]>}
 
 	"root":

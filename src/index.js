@@ -28,13 +28,6 @@ var assignAll = (d,s) => {
 	}
 	return d;
 };
-//### Symbols
-// Create some symbols so we don't overwrite things or get things overwritten
-export var root    = Symbol('root');
-export var alias   = Symbol('alias');
-export var method  = Symbol('method');
-export var pirate  = Symbol('private');
-export var special = Symbol('special');
 // `Path`
 // ---
 //
@@ -59,6 +52,33 @@ Path.parse = function(path) {
 	var parts = path.split('/');
 	return new Path(...parts);
 };
+// `Annotation`
+// ---
+// 
+// A shim for Traceur's annotations.
+//
+class Annotation { init() {} }
+//#### `has :: Object → Maybe Annotation`
+Annotation.has = function (obj) {
+	return obj.annotations.find((a) => a instanceof this);
+};
+Annotation.extend = function (proto = {}) {
+	var sub = class extends Annotation {
+		constructor(...args) {
+			if(this instanceof Annotation) {
+				this.init(...args);
+			} else {
+				var obj = args.pop();
+				obj.annotations = obj.annotations || [];
+				obj.annotations.push(new sub(...args));
+				return obj; // for chaining
+			}
+		}
+	};
+	Object.assign(sub.prototype, proto);
+	Object.assign(sub, Annotation);
+	return sub;
+};
 // `Controller`
 // ---
 //
@@ -71,29 +91,23 @@ export class Controller {
 }
 
 Object.assign(Controller, {
-	//#### `method :: HTTPMethod → Action → Action`
-	method: curry((val, action) => Object.assign(action, {[method]: val})),
-	//#### `alias :: Path → Action → Action`
-	alias(...aka) {
-		var action = aka.pop();
-		action[alias] = (action[alias] || []).concat(aka);
-		return action;
-	},
-	//#### `root :: Action → Action`
-	// Sets `root` to true for the action. Root actions operate on the root of the controller path.
-	root(obj = this) {
-		return Object.assign(obj, {[root]: true});
-	},
-	//#### `private :: Action → Action`
-	// Sets `private` to true for the action. Private actions don't generate any routes, but are available to call by other actions.
-	private(obj = this) {
-		return Object.assign(obj, {[pirate]: true});
-	},
+	//#### `method :: () → Annotation`
+	method: Annotation.extend({
+		init(method) { this.method = method; }
+	}),
+	//#### `alias :: Path → Annotation`
+	alias: Annotation.extend({
+		init(...aka) { this.alias = aka; }
+	}),
+	//#### `root :: () → Annotation`
+	// Root actions operate on the root of the controller path.
+	root: Annotation.extend(),
+	//#### `private :: () → Annotation`
+	// Private actions don't generate any routes, but are available to call by other actions.
+	private: Annotation.extend(),
 	//#### `special :: Action → Action`
-	// Sets `special` to true for the action. Special actions don't generate the default `/controller/action` route, but any root or alias routes are still generated.
-	special(obj = this) {
-		return Object.assign(obj, {[special]: true});
-	},
+	// Special actions don't generate the default `/controller/action` route, but any root or alias routes are still generated.
+	special: Annotation.extend(),
 	//#### `routes :: [Request → Maybe Promise Response]`
 	// Collect the actions together into an array of routes
 	routes() {
@@ -102,8 +116,9 @@ Object.assign(Controller, {
 			var handler = this.handle(action, params);
 
 			return flatMap(this.makePaths(action, params), (path) => {
+				var method = this.method.has(this.prototype[action]);
 				return respond(
-					this.prototype[action][method] || 'get',
+					method ? method.method : 'get',
 					path,
 					handler
 				);
@@ -133,10 +148,10 @@ Object.assign(Controller, {
 		var method = this.prototype[action];
 
 		return join(arrayIf([
-			arrayIf([new Path(base, action)], !method[special]),
-			arrayIf([new Path(base)], (method[root] || this[root] || action === 'index')),
-			arrayIf(method[alias] && method[alias].map((p) => Path.parse(p)), method[alias])
-		], !method[pirate])).map((p) => {
+			arrayIf([new Path(base, action)], !this.special.has(method)),
+			arrayIf([new Path(base)], (this.special.has(method) || this.special.has(this) || action === 'index')),
+			arrayIf(this.alias.has(method) && this.alias.has(method).alias.map((p) => Path.parse(p)), this.alias.has(method))
+		], !this.private.has(method))).map((p) => {
 			return p.concat(paramsParts).toString();
 		});
 	},
@@ -158,5 +173,9 @@ Object.assign(Controller, {
 //#### Method decorators
 // These are `method` partially applied with the usual HTTP methods
 for(var m of ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace', 'connect']) {
-	Controller[m] = Controller.method(m);
+	Controller[m] = class extends Controller.method {
+		init() {
+			super.init(m);
+		}
+	};
 }
