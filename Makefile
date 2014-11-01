@@ -22,7 +22,7 @@ all: lib/index.js
 test: all $(TEST_FILES)
 	mocha -u exports $(TEST_FILES)
 
-docs/%.md: src/%.ls
+docs/%.md: src/%.js
 	sug convert -o docs $<
 
 docs: docs/index.md
