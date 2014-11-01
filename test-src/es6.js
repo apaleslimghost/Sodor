@@ -129,141 +129,185 @@ module.exports = {
 				expect(Foo.makePaths('bar', [])).not.to.contain('/foo/bar');
 			}
 		},
-/*
 
-		"handle":
-			"should instantiate the controller": (done)->
-				c = expect.sinon.spy!
-				class Foo extends Controller
-					constructor$$: c
-					bar: ->
-						expect this .to.be.a Foo
-						expect c .to.be.called!
-						done!
+		"handle": {
+			"should instantiate the controller"(done) {
+				class Foo extends Controller {
+					bar() {
+						expect(this).to.be.a(Foo);
+						done();
+					}
+				}
 
-				(Foo.handle 'bar' [])!
+				Foo.handle('bar', [])();
+			},
 
-			"should pass through return values": ->
-				class Foo extends Controller
-					bar: -> 'world'
+			"should pass through return values"() {
+				class Foo extends Controller {
+					bar() { return 'world'; }
+				}
 
-				o = Foo.handle 'bar' []
-				expect o! .to.be 'world'
+				var o = Foo.handle('bar', []);
+				expect(o()).to.be('world');
+			},
 
-			"should send url parameters to the right places": (done)->
-				class Foo extends Controller
-					bar: (a,b)->
-						expect a .to.be 'hello'
-						expect b .to.be 'world'
-						done!
+			"should send url parameters to the right places"(done) {
+				class Foo extends Controller {
+					bar(a,b) {
+						expect(a).to.be('hello');
+						expect(b).to.be('world');
+						done();
+					}
+				}
 
-				o = Foo.handle 'bar' ['a' 'b']
-				o params:
-					a: 'hello'
+				var o = Foo.handle('bar', ['a', 'b']);
+				o({params: {
+					a: 'hello',
 					b: 'world'
+				}});
+			}
+		},
 
-		"routes":
-			before: ->
-				@respond = expect.sinon.stub!
-				sodor.__set__ {@respond}
-				expect.sinon.stub Controller, 'handle'
-				expect.sinon.stub Controller, 'makePaths'
+		"routes": {
+			before() {
+				var respond = this.respond = expect.sinon.stub();
+				sodor.__set__({respond});
+				expect.sinon.stub(Controller, 'handle');
+				expect.sinon.stub(Controller, 'makePaths');
+			},
 
-			after: ->
-				Controller.handle.restore!
-				Controller.makePaths.restore!
+			after() {
+				Controller.handle.restore();
+				Controller.makePaths.restore();
+			},
 
-			before-each: ->
-				Controller.makePaths.returns ['/']
-				Controller.handle.returns ->
+			beforeEach() {
+				Controller.makePaths.returns(['/']);
+				Controller.handle.returns(() => {});
+			},
 
-			"should make handlers for each action": ->
-				class Foo extends Controller
-					a: ->
-					b: ->
-					c: ->
+			"should make handlers for each action"() {
+				class Foo extends Controller {
+					a() {}
+					b() {}
+					c() {}
+				}
 
-				Foo.routes!
-				expect Controller.handle .to.be.called-with 'a'
-				expect Controller.handle .to.be.called-with 'b'
-				expect Controller.handle .to.be.called-with 'c'
+				Foo.routes();
+				expect(Controller.handle).to.be.calledWith('a');
+				expect(Controller.handle).to.be.calledWith('b');
+				expect(Controller.handle).to.be.calledWith('c');
+			},
 
-			"should make routes for each handler": ->
-				Controller.handle.returns handler = ->
-				class Foo extends Controller
-					a: ->
+			"should make routes for each handler"() {
+				var handler = () => {};
+				Controller.handle.returns(handler);
+				class Foo extends Controller {
+					a() {}
+				}
 
-				Foo.routes!
-				expect @respond .to.be.called-with 'get' '/' handler
+				Foo.routes();
+				expect(this.respond).to.be.calledWith('get', '/', handler);
+			},
 				
-			"should pass through the method": ->
-				class Foo extends Controller
-					a: @post ->
+			"should pass through the method"() {
+				class Foo extends Controller {
+					@Controller.post
+					a() {}
+				}
 
-				Foo.routes!
-				expect @respond .to.be.called-with 'post'
+				Foo.routes();
+				expect(this.respond).to.be.calledWith('post');
+			},
 
-			"should create multiple routes for multiple paths": ->
-				Controller.makePaths.returns ['a' 'b']
-				class Foo extends Controller
-					a: ->
+			"should create multiple routes for multiple paths"() {
+				Controller.makePaths.returns(['a', 'b']);
+				class Foo extends Controller {
+					a() {}
+				}
 
-				Foo.routes!
-				expect @respond .to.be.called-with 'get' 'a'
-				expect @respond .to.be.called-with 'get' 'b'
+				Foo.routes();
+				expect(this.respond).to.be.calledWith('get', 'a');
+				expect(this.respond).to.be.calledWith('get', 'b');
+			},
 
-			"should return the list of routes": ->
-				@respond.returns 'a'
-				class Foo extends Controller
-					a: ->
+			"should return the list of routes"() {
+				this.respond.returns('a');
+				class Foo extends Controller {
+					a() {}
+				}
 
-				expect Foo.routes! .to.contain 'a'
+				expect(Foo.routes()).to.contain('a');
+			},
 
-		"action-names":
-			"should get a list of methods": ->
-				class Foo extends Controller
-					bar: ->
-					baz: ->
+			"should get parameter names from function params"() {
+				class Foo extends Controller {
+					bar(a, b, c) {}
+				}
 
-				expect Foo.action-names! .to.contain 'bar'
-				expect Foo.action-names! .to.contain 'baz'
+				Foo.routes();
+				expect(Foo.handle).to.be.calledWith('bar', ['a', 'b', 'c']);
+			}
+		},
 
-			"shouldn't include internal prototype stuff": ->
-				class Foo extends Controller
-				expect Foo.action-names! .not.to.contain 'constructor'
-				expect Foo.action-names! .not.to.contain '__proto__'
+		"actionNames": {
+			"should get a list of methods"() {
+				class Foo extends Controller {
+					bar() {}
+					baz() {}
+				}
 
-			"should see inherited things": ->
-				class Foo extends Controller
-					bar: ->
+				expect(Foo.actionNames()).to.contain('bar');
+				expect(Foo.actionNames()).to.contain('baz');
+			},
 
-				class Baz extends Foo
+			"shouldn't include internal prototype stuff"() {
+				class Foo extends Controller {}
+				expect(Foo.actionNames()).not.to.contain('constructor');
+				expect(Foo.actionNames()).not.to.contain('__proto__');
+			},
 
-				expect Baz.action-names! .to.contain 'bar'
+			"should see inherited things"() {
+				class Foo extends Controller {
+					bar() {}
+				}
 
-		"context":
-			"should provide a supplimentary context to the thing": (done)->
-				req = {}
-				class Foo extends Controller
-					@context = (action)-> {action}
-					bar: ->
-						expect this .to.have.property 'action' 'bar'
-						expect this .to.have.property 'request' req
-						done!
+				class Baz extends Foo {}
 
-				(Foo.handle 'bar' []) req
+				expect(Baz.actionNames()).to.contain('bar');
+			}
+		},
 
-			"should work with inherited methods": (done)->
-				req = {}
-				class Foo extends Controller
-					baz: ->
-				class Bar extends Foo
-					@context = (action)-> {action}
-					quux: ->
-						expect @baz .to.be.a Function
-						done!
+		"context": {
+			"should provide a supplimentary context to the thing"(done) {
+				var req = {};
+				class Foo extends Controller {
+					bar() {
+						expect(this).to.have.property('action', 'bar');
+						expect(this).to.have.property('request', req);
+						done();
+					}
+				}
 
-				(Bar.handle 'quux' []) req
-*/
+				Foo.context = (action) => ({action});
+				Foo.handle('bar', [])(req);
+			},
+
+			"should work with inherited methods"(done) {
+				var req = {};
+				class Foo extends Controller {
+					baz() {}
+				}
+				class Bar extends Foo {
+					quux() {
+						expect(this.baz).to.be.a(Function);
+						done();
+					}
+				}
+				Foo.context = (action) => ({action});
+
+				Bar.handle('quux', [])(req);
+			}
+		}
 	}
 };

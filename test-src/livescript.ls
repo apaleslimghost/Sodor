@@ -220,6 +220,13 @@ export "Sodor Controller":
 
 			expect Foo.routes! .to.contain \a
 
+		"should get parameter names from function params": ->
+			class Foo extends Controller
+				a: (a, b, c)->
+
+			Foo.routes!
+			expect Foo.handle .to.be.called-with \a [\a \b \c]
+
 	"action-names":
 		"should get a list of methods": ->
 			class Foo extends Controller
