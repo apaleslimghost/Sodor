@@ -2,11 +2,13 @@
 
 Controller dispatching for Livewire. Which lets you write routes like
 
-```livescript
-class Post extends Controller
-  read: (id)-> ...
-  update: @put  (id)-> ...
-  delete: @post (id)-> ...
+```javascript
+class Post extends Controller {
+  read(id) { ... }
+  @put update(id) { ... }
+  @post delete(id) { ... }
+}
+/* ES6 with Traceur annotations */
 ```
 
 where the function arguments become URL parameters and http method decorators do what you think.
