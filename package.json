@@ -1,6 +1,6 @@
 {
   "name": "sodor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "controller dispatching for livewire",
   "main": "index.js",
   "scripts": {
@@ -36,6 +36,7 @@
     "curry": "^1.2.0",
     "get-parameter-names": "^0.2.0",
     "livewire": "^0.5.1",
-    "traceur": "0.0.72"
+    "traceur": "0.0.72",
+    "traceur-annotations": "^1.0.0"
   }
 }
