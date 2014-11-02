@@ -6,46 +6,6 @@ require! {
 {Controller}:sodor = rewire '../lib/index.js'
 
 export "Sodor Controller":
-	"method":
-		"should add a method annotation": ->
-			o = {}
-			Controller.method \a o
-			expect o.annotations.0 .to.be.a Controller.method
-			expect o.annotations.0 .to.have.property \method \a
-
-
-		"should have shorthands for http methods": {[
-			m, ->
-				o = {}
-				Controller[m] o
-				expect o.annotations.0 .to.have.property \method m
-		] for m in <[get post put delete patch options head trace connect]>}
-
-	"root":
-		"should add a root annotation": ->
-			o = {}
-			Controller.root o
-			expect o.annotations.0 .to.be.a Controller.root
-
-	"private":
-		"should add a private annotation": ->
-			o = {}
-			Controller.private o
-			expect o.annotations.0 .to.be.a Controller.private
-
-	"special":
-		"should add a special annotation": ->
-			o = {}
-			Controller.special o
-			expect o.annotations.0 .to.be.a Controller.special
-
-	"alias":
-		"should add an alias annotation": ->
-			o = {}
-			Controller.alias \a o
-			expect o.annotations.0 .to.be.a Controller.alias
-			expect o.annotations.0.alias .to.eql [\a]
-
 	"make-paths":
 		"should return a path based on classname and action name": ->
 			class Foo extends Controller

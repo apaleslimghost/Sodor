@@ -6,6 +6,7 @@ var getParameterNames = require('get-parameter-names');
 var respond = require('livewire/lib/respond');
 var path = require('path');
 var curry = require('curry');
+var Annotation = require('traceur-annotations');
 //var Symbol = require('es6-symbol');
 //### Some functional helpers
 //#### `flatMap :: Array a → (a → (Array b | b)) → Array b`
@@ -51,33 +52,6 @@ export class Path {
 Path.parse = function(path) {
 	var parts = path.split('/');
 	return new Path(...parts);
-};
-// `Annotation`
-// ---
-// 
-// A shim for Traceur's annotations.
-//
-class Annotation { init() {} }
-//#### `has :: Object → Maybe Annotation`
-Annotation.has = function (obj) {
-	return (obj.annotations || []).find((a) => a instanceof this);
-};
-Annotation.extend = function (proto = {}) {
-	var sub = class extends this {
-		constructor(...args) {
-			if(this instanceof Annotation) {
-				this.init(...args);
-			} else {
-				var obj = args.pop() || this;
-				obj.annotations = obj.annotations || [];
-				obj.annotations.push(new sub(...args));
-				return obj; // for chaining
-			}
-		}
-	};
-	Object.assign(sub.prototype, proto);
-	Object.assign(sub, Annotation);
-	return sub;
 };
 // `Controller`
 // ---
