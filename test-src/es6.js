@@ -3,10 +3,7 @@ var expect = require('karma-sinon-expect').expect;
 var rewire = require('rewire');
 var sodor = rewire('../lib/index.js');
 var {Controller} = sodor;
-var {
-	root,
-	alias
-} = Controller;
+var {root, alias} = require('../lib/annotations.js');
 
 module.exports = {
 	"Sodor controller": {
