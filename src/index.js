@@ -1,58 +1,11 @@
 /* jshint esnext:true */
 // Sodor
 // =====
-//### Import our dependencies
 var getParameterNames = require('get-parameter-names');
 var respond = require('livewire/lib/respond');
-var path = require('path');
-var curry = require('curry');
 var Annotation = require('traceur-annotations');
-//var Symbol = require('es6-symbol');
-//### Some functional helpers
-//#### `flatMap :: Array a → (a → (Array b | b)) → Array b`
-// Yay for Javascript's type system. `.concat` is `Array a → (Array a | a) → Array a`
-var flatMap = curry((xs, f) => xs.reduce(((a, x) => a.concat(f(x))), []));
-//#### `guard :: Boolean → Array ()`
-var guard = (cond) => cond ? [null] : [];
-//#### `array-if :: Array a → Boolean → Array a`
-var arrayIf = curry((xs, cond) => flatMap(guard(cond), () => xs));
-//#### `id :: ∀ a. a → a`
-var id = (a) => a;
-//#### `join :: Array Array a → Array a`
-var join = (a) => flatMap(a, id);
-//#### `props :: Object → [String]`
-var props = (obj) => [for(name of Object.getOwnPropertyNames(obj)) if(name !== 'constructor') name];
-//#### `assignAll :: Object → Object → Object`
-var assignAll = (d,s) => {
-	for(var p in s) {
-		d[p] = s[p];
-	}
-	return d;
-};
-// `Path`
-// ---
-//
-// Utility class for constructing and parsing paths, so as we don't accidentally munge arrays together.
-export class Path {
-//#### `constructor`
-	constructor(...parts) {
-		this.parts = parts;
-	}
-//#### `#to-string :: → String`
-	toString() {
-		return path.normalize('/' + this.parts.join('/'));
-	}
-//#### `#concat :: (Path | Array String) → Path
-	concat(o) {
-		var parts = this.parts.concat(o.parts || o);
-		return new Path(...parts);
-	}
-}
-//#### `parse :: String → Path`
-Path.parse = function(path) {
-	var parts = path.split('/');
-	return new Path(...parts);
-};
+import {flatMap, guard, arrayIf, id, join, props, assignAll} from './prelude';
+import Path from './path';
 // `Controller`
 // ---
 //
@@ -63,7 +16,7 @@ export class Controller {
 	// We save the request to the instance (as we see later, it's one instance ⇔ one request).
 	constructor(request) { this.request = request; }
 }
-
+// Add methods to the controller class
 Object.assign(Controller, {
 	//#### `method :: () → Annotation`
 	method: Annotation.extend({
@@ -144,7 +97,6 @@ Object.assign(Controller, {
 		};
 	}
 });
-
 //#### Method decorators
 // These are `method` partially applied with the usual HTTP methods
 ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace', 'connect'].forEach((m) => {
