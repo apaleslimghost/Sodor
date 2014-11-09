@@ -9,7 +9,6 @@ function subMethod(m) {
 	});
 }
 
-
 exports.get = subMethod('get');
 exports.post = subMethod('post');
 exports.put = subMethod('put');

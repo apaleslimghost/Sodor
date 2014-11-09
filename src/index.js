@@ -81,6 +81,6 @@ Object.assign(Controller, {
 		};
 	}
 });
+
 Object.assign(Controller, annotations);
 Object.assign(Controller, methods);
-console.log(annotations)
