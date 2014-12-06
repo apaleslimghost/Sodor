@@ -1,6 +1,6 @@
 {
   "name": "sodor",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "controller dispatching for livewire",
   "main": "lib/index.js",
   "scripts": {
