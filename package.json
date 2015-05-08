@@ -25,7 +25,13 @@
   },
   "homepage": "https://github.com/quarterto/Sodor",
   "devDependencies": {
+    "babel": "^5.1.11",
+    "mocha": "^2.2.4"
   },
   "dependencies": {
+    "babel-runtime": "^5.2.17",
+    "boulevard": "^2.3.1",
+    "get-parameter-names": "^0.2.0",
+    "param-trie": "^1.1.0"
   }
 }
