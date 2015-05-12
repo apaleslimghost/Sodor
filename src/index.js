@@ -8,6 +8,9 @@ function defaultRoute(routes, base, action) {
 	routes.set('default', [Param(base), Param(action)]);
 }
 
+var props = (obj) => Object.getOwnPropertyNames(obj).filter(name => name !== 'constructor');
+var flatMap = (xs, f) => xs.reduce((ys, x) => ys.concat(f(x)), []);
+
 class Controller {
 	static routes() {
 		return boulevard(flatMap(this.actionNames(), action => {
@@ -46,6 +49,7 @@ class Controller {
 
 	static handle(action, params) {
 		return (req) => {
+			console.log(req);
 			var values;
 		};
 	}
